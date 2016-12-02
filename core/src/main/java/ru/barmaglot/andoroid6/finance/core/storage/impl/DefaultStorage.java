@@ -9,12 +9,50 @@ import java.util.List;
 import java.util.Map;
 
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.Storage;
+import ru.barmaglot.andoroid6.finance.core.storage.myexception.AmountException;
+import ru.barmaglot.andoroid6.finance.core.storage.myexception.CurrencyException;
 
 public class DefaultStorage implements Storage {
 
     private String name;
-    private Map<Currency, BigDecimal> currencyAmount = new HashMap<>();
-    private List<Currency> allCurrency = new ArrayList<>();
+    private Map<Currency, BigDecimal> currencyAmounts = new HashMap<>();
+    private List<Currency> currencyList = new ArrayList<>();
+
+    public DefaultStorage() {
+    }
+
+    public DefaultStorage(String name) {
+        this.name=name;
+    }
+
+    public DefaultStorage(String name, Map<Currency, BigDecimal> currencyAmounts, List<Currency> currencyList) {
+        this.name = name;
+        this.currencyAmounts = currencyAmounts;
+        this.currencyList = currencyList;
+    }
+
+
+
+
+
+
+    @Override
+    public List<Currency> getAvailableCurrencies() {
+        return currencyList;
+    }
+
+    public void setAvailableCurrencies(List<Currency> currencyList) {
+        this.currencyList = currencyList;
+    }
+
+    @Override
+    public Map<Currency, BigDecimal> getCurrencyAmounts() {
+        return currencyAmounts;
+    }
+
+    public void setCurrencyAmounts(Map<Currency, BigDecimal> currencyAmounts) {
+        this.currencyAmounts = currencyAmounts;
+    }
 
     @Override
     public String getName() {
@@ -25,69 +63,96 @@ public class DefaultStorage implements Storage {
         this.name = name;
     }
 
-    @Override
-    public Map<Currency, BigDecimal> getCurrencyAmount() {
-        return currencyAmount;
-    }
-
-    public void setCurrencyAmount(Map<Currency, BigDecimal> currencyAmount) {
-        this.currencyAmount = currencyAmount;
-    }
 
     @Override
-    public List<Currency> getAllCurrency() {
-        return allCurrency;
+    public BigDecimal getAmount(Currency currency) throws CurrencyException {
+        checkCurrencyExist(currency);
+        return currencyAmounts.get(currency);
     }
 
-    public void setAllCurrency(List<Currency> allCurrency) {
-        this.allCurrency = allCurrency;
+
+    // ручное обновление баланса
+    @Override
+    public void changeAmount(BigDecimal amount, Currency currency) throws CurrencyException {
+        checkCurrencyExist(currency);
+        currencyAmounts.put(currency, amount);
+    }
+
+
+    // добавление денег в хранилище
+    @Override
+    public void addAmount(BigDecimal amount, Currency currency) throws CurrencyException {
+        checkCurrencyExist(currency);
+        BigDecimal oldAmount = currencyAmounts.get(currency);
+        currencyAmounts.put(currency, oldAmount.add(amount));
+    }
+
+
+    // отнимаем деньги из хранилища
+    @Override
+    public void expenseAmount(BigDecimal amount, Currency currency) throws AmountException, CurrencyException {
+        checkCurrencyExist(currency);
+
+        BigDecimal oldAmount = currencyAmounts.get(currency);
+        BigDecimal newValue = oldAmount.subtract(amount);
+
+        checkAmount(newValue);
+        currencyAmounts.put(currency, newValue);
     }
 
 
     @Override
-    public void changeAmount(BigDecimal amount, Currency currency) {
-        currencyAmount.put(currency, amount);
+    public void addCurrency(Currency currency) throws CurrencyException {
+        if(currencyList.contains(currency)){
+            throw new CurrencyException("Currency already exist!");
+        }
+        currencyList.add(currency);
+        currencyAmounts.put(currency, BigDecimal.ZERO);
     }
 
     @Override
-    public void addAmount(BigDecimal amount, Currency currency) {
-        BigDecimal oldAmount = currencyAmount.get(currency);
-        currencyAmount.put(currency,oldAmount.add(amount));
+    public void deleteCurrency(Currency currency) throws CurrencyException {
+        checkCurrencyExist(currency);
+        if(!currencyAmounts.get(currency).equals(BigDecimal.ZERO)){
+            throw new CurrencyException("Can't delete currency with amount!");
+        }
+        currencyAmounts.remove(currency);
+        currencyList.remove(currency);
     }
 
-    @Override
-    public void expenseAmount(BigDecimal amount, Currency currency) {
-        BigDecimal oldAmount = currencyAmount.get(currency);
-        currencyAmount.put(currency,oldAmount.subtract(amount));
-    }
-
-    @Override
-    public void addCurrency(Currency currency) {
-        allCurrency.add(currency);
-        currencyAmount.put(currency, BigDecimal.ZERO);
-    }
-
-    @Override
-    public void deleteCurrency(Currency currency) {
-        allCurrency.remove(currency);
-        currencyAmount.remove(currency);
-    }
 
     @Override
     public BigDecimal getApproxAmount(Currency currency) {
-        // TODO: 30.11.16 реализовать метод приведение всех валют хранилища к одной
-        throw new UnsupportedOperationException("Not implemented!!!");
+        // TODO реализовать расчет остатка с приведением в одну валюту
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public Currency getCurrency(String code) {
-        Currency searchCurrency = null;
-        for (Currency currency : allCurrency) {
+    public Currency getCurrency(String code) throws CurrencyException{
+        // количество валют для каждого хранилища будет небольшим - поэтому можно провоить поиск через цикл
+        // можно использовать библиотеку Apache Commons Collections
+
+        for (Currency currency : currencyList) {
             if (currency.getCurrencyCode().equals(code)) {
-                searchCurrency = currency;
-                break;
+                return currency;
             }
         }
-        return searchCurrency;
+
+        throw new CurrencyException();
+
+    }
+
+    private void checkAmount(BigDecimal amount) throws AmountException {
+        int result = amount.compareTo(BigDecimal.ZERO);
+        if (result <= 0) {
+            throw new AmountException("Amount can't be <0");
+        }
+    }
+
+
+    private void checkCurrencyExist(Currency currency) throws CurrencyException {
+        if (!currencyList.contains(currency)) {
+            throw new CurrencyException("Currency not exist for delete!");
+        }
     }
 }

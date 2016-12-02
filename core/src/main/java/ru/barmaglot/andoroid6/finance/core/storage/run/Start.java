@@ -1,9 +1,8 @@
-package ru.barmaglot.andoroid6.finance.core.storage.interfaces;
+package ru.barmaglot.andoroid6.finance.core.storage.run;
 
 import java.util.Currency;
 import java.util.Locale;
 
-import static com.sun.tools.doclint.Entity.ne;
 
 /**
  * Created by antonpavlov on 30.11.16.
