@@ -1,17 +1,17 @@
-package ru.barmaglot.andoroid6.finance.core.storage.interfaces;
+package ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage;
 
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
-import ru.barmaglot.andoroid6.finance.core.storage.myexception.AmountException;
-import ru.barmaglot.andoroid6.finance.core.storage.myexception.CurrencyException;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
+import ru.barmaglot.andoroid6.finance.core.storage.interfaces.ITreeNode;
 
 // TODO изменить тип BigDecimal на готовый класс по работе с деньгами Money
-public interface Storage {
+public interface IStorage extends ITreeNode{
 
-    String getName();// обязывает реализовать свойство name
 
     // получение баланса (остатка)
     Map<Currency, BigDecimal> getCurrencyAmounts(); // остаток по каждой доступной валюте в хранилище
@@ -34,7 +34,7 @@ public interface Storage {
 
     void deleteCurrency(Currency currency) throws CurrencyException; // удалить валюту из хранилища
 
-    Currency getCurrency(String code)throws CurrencyException; // получить валюту по коду
+    Currency getCurrency(String code) throws CurrencyException; // получить валюту по коду
 
     List<Currency> getAvailableCurrencies(); // получить все доступные валюты хранилища в отдельной коллекции
 

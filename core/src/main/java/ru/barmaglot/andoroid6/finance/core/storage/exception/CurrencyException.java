@@ -1,8 +1,5 @@
-package ru.barmaglot.andoroid6.finance.core.storage.myexception;
+package ru.barmaglot.andoroid6.finance.core.storage.exception;
 
-/**
- * Created by antonpavlov on 01.12.16.
- */
 
 public class CurrencyException extends Exception {
 

@@ -1,4 +1,4 @@
-package ru.barmaglot.andoroid6.finance.core.storage.impl;
+package ru.barmaglot.andoroid6.finance.core.storage.impl.storage;
 
 
 import java.math.BigDecimal;
@@ -8,33 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.Storage;
-import ru.barmaglot.andoroid6.finance.core.storage.myexception.AmountException;
-import ru.barmaglot.andoroid6.finance.core.storage.myexception.CurrencyException;
+import ru.barmaglot.andoroid6.finance.core.storage.abstracts.AbstractTreeNode;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
+import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
 
-public class DefaultStorage implements Storage {
+public class DefaultStorage extends AbstractTreeNode implements IStorage {
 
-    private String name;
     private Map<Currency, BigDecimal> currencyAmounts = new HashMap<>();
     private List<Currency> currencyList = new ArrayList<>();
 
     public DefaultStorage() {
     }
-
-    public DefaultStorage(String name) {
-        this.name=name;
-    }
-
-    public DefaultStorage(String name, Map<Currency, BigDecimal> currencyAmounts, List<Currency> currencyList) {
-        this.name = name;
-        this.currencyAmounts = currencyAmounts;
-        this.currencyList = currencyList;
-    }
-
-
-
-
-
 
     @Override
     public List<Currency> getAvailableCurrencies() {
@@ -52,15 +37,6 @@ public class DefaultStorage implements Storage {
 
     public void setCurrencyAmounts(Map<Currency, BigDecimal> currencyAmounts) {
         this.currencyAmounts = currencyAmounts;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
 
@@ -103,7 +79,7 @@ public class DefaultStorage implements Storage {
 
     @Override
     public void addCurrency(Currency currency) throws CurrencyException {
-        if(currencyList.contains(currency)){
+        if (currencyList.contains(currency)) {
             throw new CurrencyException("Currency already exist!");
         }
         currencyList.add(currency);
@@ -113,7 +89,7 @@ public class DefaultStorage implements Storage {
     @Override
     public void deleteCurrency(Currency currency) throws CurrencyException {
         checkCurrencyExist(currency);
-        if(!currencyAmounts.get(currency).equals(BigDecimal.ZERO)){
+        if (!currencyAmounts.get(currency).equals(BigDecimal.ZERO)) {
             throw new CurrencyException("Can't delete currency with amount!");
         }
         currencyAmounts.remove(currency);
@@ -128,7 +104,7 @@ public class DefaultStorage implements Storage {
     }
 
     @Override
-    public Currency getCurrency(String code) throws CurrencyException{
+    public Currency getCurrency(String code) throws CurrencyException {
         // количество валют для каждого хранилища будет небольшим - поэтому можно провоить поиск через цикл
         // можно использовать библиотеку Apache Commons Collections
 

@@ -1,21 +1,27 @@
 package ru.barmaglot.andoroid6.finance.core.storage.run;
 
-import java.util.Currency;
-import java.util.Locale;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
-
-/**
- * Created by antonpavlov on 30.11.16.
- */
+import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
 
 public class Start {
     public static void main(String[] args) {
-        //Currency rub = Currency.getInstance("RUB");
-        Currency rub = Currency.getInstance("USD");
-        System.out.println(rub.getDisplayName());
-        System.out.println(rub.getClass());
-        System.out.println(rub.getDefaultFractionDigits());
-        System.out.println(rub.getSymbol(new Locale("RUB")));
+
+        try (
+                Statement stmt = SQLiteConnection.getInstance().getConnection().createStatement();
+                ResultSet rs = stmt.executeQuery("select * from storage")
+
+        ) {
+
+            while (rs.next()) {
+                System.out.println(rs.getString("name"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 }
