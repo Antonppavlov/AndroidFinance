@@ -5,9 +5,14 @@ import java.util.List;
 //описывает общие действия в бд для всех объектов
 public interface ICommonDAO<T> {
 
-    List<T>getAll();
+    List<T> getAll();
+
     T get(long id);
+
     boolean update(T object);
+
     boolean delete(T object);
+
+
 
 }
