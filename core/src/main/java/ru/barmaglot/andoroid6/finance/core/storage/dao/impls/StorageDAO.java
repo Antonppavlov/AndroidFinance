@@ -13,11 +13,13 @@ import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
 import ru.barmaglot.andoroid6.finance.core.storage.impl.storage.DefaultStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
+import ru.barmaglot.andoroid6.finance.core.storage.utils.TreeUtils;
 
 public class StorageDAO implements IStorageDAO {
 
     private static final String CURRENCY_AMOUNT_TABLE = "currency_amount";
     private static final String STORAGE_TABLE = "storage";
+    private TreeUtils<IStorage> treeUtils =new TreeUtils();
 
     private List<IStorage> storageList = new ArrayList<>();
 
@@ -75,7 +77,7 @@ public class StorageDAO implements IStorageDAO {
         }
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
-                        "SELECT FROM * " + STORAGE_TABLE + ";")
+                        "SELECT * FROM " + STORAGE_TABLE + ";")
              ;) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -84,14 +86,18 @@ public class StorageDAO implements IStorageDAO {
                 defaultStorage.setId(resultSet.getLong("id"));
                 defaultStorage.setName(resultSet.getString("name"));
 
+// TODO: 10.12.16 нужно сделать получение всех объектов
+                long parentId = resultSet.getLong("parent_id");
 
-                long parent_id = resultSet.getLong("parent_id");
+
+                treeUtils.addToTree(parentId,defaultStorage,storageList);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return storageList;
+        return storageList;//должен содержать только корневые элементы
     }
 
     @Override
@@ -101,15 +107,36 @@ public class StorageDAO implements IStorageDAO {
     }
 
     @Override
+    public boolean add(IStorage object) {
+        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+                .prepareStatement(
+                        "INSERT FROM " + STORAGE_TABLE + "(name,parent_id) values(?,?)")
+             ;) {
+            preparedStatement.setString(2, object.getName());
+            preparedStatement.setLong(1, object.getParent().getId());
+
+            if (preparedStatement.executeUpdate() == 1) { //если обновлена одна запить то выбрасываем тру
+
+                return true;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
     public boolean update(IStorage object) {
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
-                        "UPDATE FROM " + STORAGE_TABLE + "set name=? where id=?")
+                        "UPDATE INTO " + STORAGE_TABLE + "set name=? where id=?")
              ;) {
             preparedStatement.setString(2, object.getName());
             preparedStatement.setLong(1, object.getId());
 
             if (preparedStatement.executeUpdate() == 1) { //если обновлена одна запить то выбрасываем тру
+
                 return true;
             }
 

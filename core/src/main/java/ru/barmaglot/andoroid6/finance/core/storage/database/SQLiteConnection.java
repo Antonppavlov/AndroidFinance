@@ -23,7 +23,7 @@ public class SQLiteConnection {
     public Connection getConnection() {
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:sqlite:/Users/antonpavlov/Documents/money.db");
+                connection = DriverManager.getConnection("jdbc:sqlite:/Users/antonpavlov/AndroidStudioProjects/AndroidFinance/core/src/main/java/resource/money.db");
             } catch (SQLException e) {
                 e.printStackTrace();
             }

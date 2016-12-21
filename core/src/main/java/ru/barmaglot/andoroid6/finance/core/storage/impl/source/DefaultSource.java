@@ -3,20 +3,20 @@ package ru.barmaglot.andoroid6.finance.core.storage.impl.source;
 import ru.barmaglot.andoroid6.finance.core.storage.abstracts.AbstractTreeNode;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.ITreeNode;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.source.ISource;
-import ru.barmaglot.andoroid6.finance.core.storage.type.TypeSource;
+import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
 
 
 public class DefaultSource extends AbstractTreeNode implements ISource {
 
-    private TypeSource typeSource;
+    private OperationType operationType;
 
     @Override
-    public TypeSource getTypeSource() {
-        return typeSource;
+    public OperationType getOperationType() {
+        return operationType;
     }
 
-    public void setTypeSource(TypeSource typeSource) {
-        this.typeSource = typeSource;
+    public void setOperationType(OperationType operationType) {
+        this.operationType = operationType;
     }
 
 
@@ -26,7 +26,7 @@ public class DefaultSource extends AbstractTreeNode implements ISource {
         // TODO: 03.12.16 для дочернего элемента устанавливаем тип операции родительского элемента
         if (child instanceof DefaultSource) {
             DefaultSource childSource = (DefaultSource) child;
-            childSource.setTypeSource(this.typeSource);
+            childSource.setOperationType(this.operationType);
         }
         super.add(child);
     }

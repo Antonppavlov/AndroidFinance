@@ -107,7 +107,6 @@ public class DefaultStorage extends AbstractTreeNode implements IStorage {
     public Currency getCurrency(String code) throws CurrencyException {
         // количество валют для каждого хранилища будет небольшим - поэтому можно провоить поиск через цикл
         // можно использовать библиотеку Apache Commons Collections
-
         for (Currency currency : currencyList) {
             if (currency.getCurrencyCode().equals(code)) {
                 return currency;

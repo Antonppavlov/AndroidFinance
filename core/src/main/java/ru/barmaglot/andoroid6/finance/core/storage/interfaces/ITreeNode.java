@@ -27,5 +27,5 @@ public interface ITreeNode {
 
     boolean hasChilds(); //проверяет есть ли дочерние элементы
 
-
+    long getParentId();
 }
