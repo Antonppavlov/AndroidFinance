@@ -22,11 +22,8 @@ public interface IStorage extends ITreeNode{
 
 
     // изменение баланса
-    void changeAmount(BigDecimal amount, Currency currency) throws CurrencyException; // изменение баланса по определенной валюте
+    void updateAmount(BigDecimal amount, Currency currency) throws AmountException, CurrencyException; // изменение баланса по определенной валюте
 
-    void addAmount(BigDecimal amount, Currency currency) throws AmountException, CurrencyException; // добавить сумму в валюте
-
-    void expenseAmount(BigDecimal amount, Currency currency) throws AmountException, CurrencyException;  // отнять сумму в валюте
 
 
     // работа с валютой

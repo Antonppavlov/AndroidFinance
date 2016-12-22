@@ -2,36 +2,38 @@ package ru.barmaglot.andoroid6.finance.core.storage.dao.impls;
 
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.impl.storage.DefaultStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
-import ru.barmaglot.andoroid6.finance.core.storage.utils.TreeUtils;
 
 public class StorageDAO implements IStorageDAO {
 
     private static final String CURRENCY_AMOUNT_TABLE = "currency_amount";
     private static final String STORAGE_TABLE = "storage";
-    private TreeUtils<IStorage> treeUtils =new TreeUtils();
 
     private List<IStorage> storageList = new ArrayList<>();
 
     @Override
-    public boolean addCurrency(IStorage storage, Currency currency) {
+    public boolean addCurrency(IStorage storage, Currency currency, BigDecimal amount) {
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
                         "INSERT INTO " + CURRENCY_AMOUNT_TABLE + "(storage_id,currency_code,amount) values(?,?,?)")
              ;) {
             preparedStatement.setLong(1, storage.getId());
             preparedStatement.setString(2, currency.getCurrencyCode());
-            preparedStatement.setBigDecimal(3, BigDecimal.ZERO);
+            preparedStatement.setBigDecimal(3, amount);
 
             if (preparedStatement.executeUpdate() == 1) { //если добавлена одна запить то выбрасываем тру
                 return true;
@@ -66,7 +68,21 @@ public class StorageDAO implements IStorageDAO {
     }
 
     @Override
-    public boolean updateAmount(IStorage storage, BigDecimal amount) {
+    public boolean updateAmount(IStorage storage, Currency currency, BigDecimal amount) {
+        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+                .prepareStatement(
+                        "UPDATE " + CURRENCY_AMOUNT_TABLE + "set amount=? where storage_id=? and currency_code=?)")
+             ;) {
+            preparedStatement.setLong(1, storage.getId());
+            preparedStatement.setString(2, currency.getCurrencyCode());
+            preparedStatement.setBigDecimal(3, amount);
+            if (preparedStatement.executeUpdate() == 1) {
+                return true;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
@@ -77,7 +93,7 @@ public class StorageDAO implements IStorageDAO {
         }
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
-                        "SELECT * FROM " + STORAGE_TABLE + ";")
+                        "SELECT * FROM " + STORAGE_TABLE + " order by parent_id")
              ;) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -85,13 +101,7 @@ public class StorageDAO implements IStorageDAO {
                 DefaultStorage defaultStorage = new DefaultStorage();
                 defaultStorage.setId(resultSet.getLong("id"));
                 defaultStorage.setName(resultSet.getString("name"));
-
-// TODO: 10.12.16 нужно сделать получение всех объектов
-                long parentId = resultSet.getLong("parent_id");
-
-
-                treeUtils.addToTree(parentId,defaultStorage,storageList);
-
+                defaultStorage.setParentId(resultSet.getLong("parent_id"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -102,27 +112,72 @@ public class StorageDAO implements IStorageDAO {
 
     @Override
     public IStorage get(long id) {
-        // TODO: 07.12.16 реализовать
-        return null;
-    }
-
-    @Override
-    public boolean add(IStorage object) {
+        DefaultStorage storage = null;
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
-                        "INSERT FROM " + STORAGE_TABLE + "(name,parent_id) values(?,?)")
+                        "SELECT * FROM " + STORAGE_TABLE + " where id=?")
              ;) {
-            preparedStatement.setString(2, object.getName());
-            preparedStatement.setLong(1, object.getParent().getId());
+            preparedStatement.setLong(1, id);
 
-            if (preparedStatement.executeUpdate() == 1) { //если обновлена одна запить то выбрасываем тру
-
-                return true;
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                storage.setId(resultSet.getLong("id"));
+                storage.setName(resultSet.getString("name"));
+                storage.setParentId(resultSet.getLong("parent_id"));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return storage;//должен содержать только корневые элементы
+    }
+
+    @Override
+    public boolean add(IStorage object) throws CurrencyException {
+        Connection connection = SQLiteConnection.getInstance().getConnection();
+        try {
+            connection.setAutoCommit(false);
+
+
+            try (PreparedStatement preparedStatement = connection
+                    .prepareStatement(
+                            "INSERT FROM " + STORAGE_TABLE + "(name,parent_id) values(?,?)",
+                            Statement.RETURN_GENERATED_KEYS)
+                 ;) {
+                preparedStatement.setString(1, object.getName());
+
+                if (object.hasParent()) {
+                    preparedStatement.setLong(2, object.getParent().getId());
+                } else {
+                    preparedStatement.setLong(2, Types.BIGINT);
+                }
+
+
+                if (preparedStatement.executeUpdate() == 1) { //если обновлена одна запить то выбрасываем тру
+
+                    try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
+
+                        while (rs.next()) {
+                            object.setId(rs.getLong(1));
+                        }
+
+                        for (Currency currency : object.getAvailableCurrencies()) {
+                            if (!addCurrency(object, currency, object.getAmount(currency))) {
+                                connection.rollback();
+                                return false;
+                            }
+                        }
+                    }
+                    connection.commit();
+                    return true;
+                }
+            }
+            connection.rollback();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
         return false;
     }
 
@@ -165,19 +220,3 @@ public class StorageDAO implements IStorageDAO {
         return false;
     }
 }
-//SELECT
-//        s1.id as id,
-//        s1.name as name_storage,
-//        s2.name as name_parent,
-//        c.currency_code,
-//        c.amount
-//        From storage as s1
-//        left JOIN storage as s2
-//        ON s1.parent_id=s2.id
-//
-//        left JOIN currency_amount as c
-//        ON s1.id=c.storage_id
-//
-//
-//
-//        ;

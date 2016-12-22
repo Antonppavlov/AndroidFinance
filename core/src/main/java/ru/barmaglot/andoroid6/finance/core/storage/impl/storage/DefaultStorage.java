@@ -49,32 +49,32 @@ public class DefaultStorage extends AbstractTreeNode implements IStorage {
 
     // ручное обновление баланса
     @Override
-    public void changeAmount(BigDecimal amount, Currency currency) throws CurrencyException {
+    public void updateAmount(BigDecimal amount, Currency currency) throws CurrencyException {
         checkCurrencyExist(currency);
         currencyAmounts.put(currency, amount);
     }
 
-
-    // добавление денег в хранилище
-    @Override
-    public void addAmount(BigDecimal amount, Currency currency) throws CurrencyException {
-        checkCurrencyExist(currency);
-        BigDecimal oldAmount = currencyAmounts.get(currency);
-        currencyAmounts.put(currency, oldAmount.add(amount));
-    }
-
-
-    // отнимаем деньги из хранилища
-    @Override
-    public void expenseAmount(BigDecimal amount, Currency currency) throws AmountException, CurrencyException {
-        checkCurrencyExist(currency);
-
-        BigDecimal oldAmount = currencyAmounts.get(currency);
-        BigDecimal newValue = oldAmount.subtract(amount);
-
-        checkAmount(newValue);
-        currencyAmounts.put(currency, newValue);
-    }
+//
+//    // добавление денег в хранилище
+//    @Override
+//    public void addAmount(BigDecimal amount, Currency currency) throws CurrencyException {
+//        checkCurrencyExist(currency);
+//        BigDecimal oldAmount = currencyAmounts.get(currency);
+//        currencyAmounts.put(currency, oldAmount.add(amount));
+//    }
+//
+//
+//    // отнимаем деньги из хранилища
+//    @Override
+//    public void expenseAmount(BigDecimal amount, Currency currency) throws AmountException, CurrencyException {
+//        checkCurrencyExist(currency);
+//
+//        BigDecimal oldAmount = currencyAmounts.get(currency);
+//        BigDecimal newValue = oldAmount.subtract(amount);
+//
+//        checkAmount(newValue);
+//        currencyAmounts.put(currency, newValue);
+//    }
 
 
     @Override
@@ -89,9 +89,9 @@ public class DefaultStorage extends AbstractTreeNode implements IStorage {
     @Override
     public void deleteCurrency(Currency currency) throws CurrencyException {
         checkCurrencyExist(currency);
-        if (!currencyAmounts.get(currency).equals(BigDecimal.ZERO)) {
-            throw new CurrencyException("Can't delete currency with amount!");
-        }
+//        if (!currencyAmounts.get(currency).equals(BigDecimal.ZERO)) {
+//            throw new CurrencyException("Can't delete currency with amount!");
+//        }
         currencyAmounts.remove(currency);
         currencyList.remove(currency);
     }

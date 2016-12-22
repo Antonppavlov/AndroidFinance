@@ -2,7 +2,6 @@ package ru.barmaglot.andoroid6.finance.core.storage.interfaces;
 
 
 import java.util.List;
-
 /**
  * Позволяет создать древовидную структуру из любого набора объектов, которые реализуют интерфейс ITreeNode
  * Паттерн "Компановщик" - вольная реализация
@@ -10,6 +9,10 @@ import java.util.List;
 public interface ITreeNode {
 
     long getId(); //каждый элемент дерева должен иметь свой униальный индетификатор
+
+    void setId(long id);
+
+    long getParentId();
 
     String getName(); //каждый элемент должен иметь свое имя
 
@@ -27,5 +30,7 @@ public interface ITreeNode {
 
     boolean hasChilds(); //проверяет есть ли дочерние элементы
 
-    long getParentId();
+    boolean hasParent(); //проверяет есть ли дочерние элементы
+
+
 }

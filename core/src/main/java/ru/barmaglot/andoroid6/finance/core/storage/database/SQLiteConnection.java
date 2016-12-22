@@ -24,7 +24,9 @@ public class SQLiteConnection {
         if (connection == null) {
             try {
                 connection = DriverManager.getConnection("jdbc:sqlite:/Users/antonpavlov/AndroidStudioProjects/AndroidFinance/core/src/main/java/resource/money.db");
-            } catch (SQLException e) {
+                connection.createStatement().execute("PRAGMA foreign_keys = ON");
+            }
+            catch (SQLException e) {
                 e.printStackTrace();
             }
         }

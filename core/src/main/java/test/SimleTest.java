@@ -5,7 +5,9 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.List;
 
+import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.SourceSynchronizer;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.StorageSynchronizer;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.SourceDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
@@ -13,6 +15,7 @@ import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.impl.storage.DefaultStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.ITreeNode;
+import ru.barmaglot.andoroid6.finance.core.storage.interfaces.source.ISource;
 import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
 
 
@@ -58,5 +61,14 @@ public class SimleTest {
     public void test5()  {
         SourceDAO sourceDAO = new SourceDAO();
         Assert.assertEquals(sourceDAO.getAll().get(0).getOperationType(), OperationType.INCOME);
+    }
+
+
+    @Test()
+    public void test6()  {
+        SourceDAO sourceDAO = new SourceDAO();
+        SourceSynchronizer sourceSynchronizer = new SourceSynchronizer(sourceDAO);
+        List<ISource> listSource = sourceSynchronizer.getListSource(OperationType.OUTCOME);
+        Assert.assertEquals(listSource.get(0).getName(), "Магазин");
     }
 }

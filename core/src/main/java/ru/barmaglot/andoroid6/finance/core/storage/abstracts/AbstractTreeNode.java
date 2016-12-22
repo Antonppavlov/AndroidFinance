@@ -49,10 +49,21 @@ public abstract class AbstractTreeNode implements ITreeNode {
     }
 
     @Override
+    public boolean hasParent() {
+        //если коллекция не пустая возвращает true
+        if(parent==null){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public long getId() {
         return id;
     }
 
+
+    @Override
     public void setId(long id) {
         this.id = id;
     }

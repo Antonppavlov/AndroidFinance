@@ -3,6 +3,8 @@ package ru.barmaglot.andoroid6.finance.core.storage.dao.impls;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,14 +103,24 @@ public class SourceDAO implements ISourceDAO {
     public boolean add(ISource object) {
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
-                        "INSERT FROM " + SOURCE_TABLE + "(name,parent_id,operation_type_id) values(?,?,?)")
+                        "INSERT INTO " + SOURCE_TABLE + "(name, parent_id, operation_type_id) values(?,?,?)",
+                        Statement.RETURN_GENERATED_KEYS)
              ;) {
             preparedStatement.setString(1, object.getName());
-            preparedStatement.setLong(2, object.getParent().getId());
+            if (object.hasParent()) {
+                preparedStatement.setLong(2, object.getParent().getId());
+            } else {
+                preparedStatement.setLong(2, Types.BIGINT);
+            }
+
             preparedStatement.setLong(3, object.getOperationType().getId());
 
             if (preparedStatement.executeUpdate() == 1) { //если обновлена одна запить то выбрасываем тру
-
+                try(ResultSet rs= preparedStatement.getGeneratedKeys()){
+                   while (rs.next()){
+                       object.setId(rs.getLong(1));
+                   }
+                }
                 return true;
             }
 
@@ -144,6 +156,7 @@ public class SourceDAO implements ISourceDAO {
                 .prepareStatement(
                         "DELETE FROM " + SOURCE_TABLE + "where id=?")
              ;) {
+
             preparedStatement.setLong(1, object.getId());
 
             if (preparedStatement.executeUpdate() == 1) { //если удалена одна запить то выбрасываем тру

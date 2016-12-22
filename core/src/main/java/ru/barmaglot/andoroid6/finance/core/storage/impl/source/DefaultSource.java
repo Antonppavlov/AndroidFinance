@@ -30,4 +30,13 @@ public class DefaultSource extends AbstractTreeNode implements ISource {
         }
         super.add(child);
     }
+
+
+    @Override
+    public void setParent(ITreeNode parent) {
+        if(parent instanceof DefaultSource){
+            super.setParent(parent);
+            operationType = ((DefaultSource) parent).getOperationType();
+        }
+    }
 }
