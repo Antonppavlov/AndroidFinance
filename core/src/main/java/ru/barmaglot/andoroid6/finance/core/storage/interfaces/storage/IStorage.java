@@ -16,7 +16,7 @@ public interface IStorage extends ITreeNode{
     // получение баланса (остатка)
     Map<Currency, BigDecimal> getCurrencyAmounts(); // остаток по каждой доступной валюте в хранилище
 
-    BigDecimal getAmount(Currency currency) throws CurrencyException; // остаток по определенной валюте
+    BigDecimal getAmount(Currency currency); // остаток по определенной валюте
 
     BigDecimal getApproxAmount(Currency currency);// примерный остаток в переводе всех денег в одну валюту
 

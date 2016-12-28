@@ -1,14 +1,20 @@
 package ru.barmaglot.andoroid6.finance.core.storage.interfaces.operation.base;
 
-import java.sql.Timestamp;
+import java.util.Calendar;
+
+import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
 
 
 public interface IOperation {
 
     long getId();
 
-    String getName();
+    void setId(long id);
 
-    Timestamp getTimestamp();
+    OperationType getOperationType();
+
+    Calendar getDateTime();
+
+    String getDescription();
 
 }

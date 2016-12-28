@@ -4,39 +4,40 @@ import java.math.BigDecimal;
 import java.util.Currency;
 
 import ru.barmaglot.andoroid6.finance.core.storage.abstracts.AbstractOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.operation.IConvertOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
+import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
 
 
+// конвертация - перевод из одного хранилища в другое в разной валюте
+public class ConvertOperation extends AbstractOperation {
 
-public class ConvertOperation extends AbstractOperation implements IConvertOperation {
+    public ConvertOperation() {
+        super(OperationType.CONVERT);
+    }
 
-   private IStorage fromStorage;
-   private IStorage toStorage;
-   private Currency fromCurrency;
-   private Currency toCurrency;
-   private BigDecimal fromAmount;
-   private BigDecimal toAmount;
+    private IStorage fromIStorage; // откуда конвертируем
+    private IStorage toIStorage; // куда конвертируем
+    private Currency fromCurrency;// в какой валюте оправили деньги
+    private Currency toCurrency; // в какой валюте получили деньги
+    private BigDecimal fromAmount; // сумма отправки в первой валюте
+    private BigDecimal toAmount; // сумма получения во второй валюте
 
-    @Override
     public IStorage getFromStorage() {
-        return fromStorage;
+        return fromIStorage;
     }
 
-    public void setFromStorage(IStorage fromStorage) {
-        this.fromStorage = fromStorage;
+    public void setFromStorage(IStorage fromIStorage) {
+        this.fromIStorage = fromIStorage;
     }
 
-    @Override
     public IStorage getToStorage() {
-        return toStorage;
+        return toIStorage;
     }
 
-    public void setToStorage(IStorage toStorage) {
-        this.toStorage = toStorage;
+    public void setToStorage(IStorage toIStorage) {
+        this.toIStorage = toIStorage;
     }
 
-    @Override
     public Currency getFromCurrency() {
         return fromCurrency;
     }
@@ -45,7 +46,6 @@ public class ConvertOperation extends AbstractOperation implements IConvertOpera
         this.fromCurrency = fromCurrency;
     }
 
-    @Override
     public Currency getToCurrency() {
         return toCurrency;
     }
@@ -54,7 +54,6 @@ public class ConvertOperation extends AbstractOperation implements IConvertOpera
         this.toCurrency = toCurrency;
     }
 
-    @Override
     public BigDecimal getFromAmount() {
         return fromAmount;
     }
@@ -63,7 +62,6 @@ public class ConvertOperation extends AbstractOperation implements IConvertOpera
         this.fromAmount = fromAmount;
     }
 
-    @Override
     public BigDecimal getToAmount() {
         return toAmount;
     }

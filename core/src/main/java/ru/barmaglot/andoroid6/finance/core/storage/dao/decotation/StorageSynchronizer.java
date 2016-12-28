@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.utils.TreeUtils;
@@ -62,16 +63,19 @@ public class StorageSynchronizer implements IStorageDAO {
     @Override
     public boolean delete(IStorage object) {
         if (iStorageDAO.delete(object)) {
-            identityMap.remove(object.getId());
-            if (object.hasParent()) {
-                object.getParent().remove(object);
-            } else {
-                treeList.remove(object);
-            }
-
+            removeToCollection(object);
             return true;
         }
         return false;
+    }
+
+    private void removeToCollection(IStorage object) {
+        identityMap.remove(object.getId());
+        if (object.hasParent()) {
+            object.getParent().remove(object);
+        } else {
+            treeList.remove(object);
+        }
     }
 
     public IStorageDAO getiStorageDAO() {
@@ -79,13 +83,25 @@ public class StorageSynchronizer implements IStorageDAO {
     }
 
     @Override
-    public boolean addCurrency(IStorage storage, Currency currency) throws CurrencyException {
-        if (iStorageDAO.addCurrency(storage, currency)) {
+    public boolean addCurrency(IStorage storage, Currency currency, BigDecimal amount) throws CurrencyException {
+        if (iStorageDAO.addCurrency(storage, currency, amount)) {
             storage.addCurrency(currency);
+            addToCollection(storage);
             return true;
         }
 
         return false;
+    }
+
+    private void addToCollection(IStorage storage) {
+        identityMap.put(storage.getId(), storage);
+        if (storage.hasParent()) {
+            if (!storage.getParent().getChilds().contains(storage)) {
+                storage.getParent().add(storage);
+            }
+        } else {
+            treeList.add(storage);
+        }
     }
 
     @Override
@@ -99,7 +115,16 @@ public class StorageSynchronizer implements IStorageDAO {
 
     @Override
     public boolean updateAmount(IStorage storage, Currency currency, BigDecimal amount) {
-        return iStorageDAO.updateAmount(storage, currency, amount);
+        if (iStorageDAO.updateAmount(storage, currency, amount)) {
+            try {
+                storage.updateAmount(amount, currency);
+            } catch (AmountException | CurrencyException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        return false;
     }
 
 }

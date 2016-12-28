@@ -19,8 +19,6 @@ import static ru.barmaglot.andoroid6.finance.core.storage.type.OperationType.TRA
 
 public class SourceSynchronizer implements ISourceDAO {
     private TreeUtils<ISource> treeUtils = new TreeUtils<>(); //строит деревья
-
-
     //Все коллекции хранят ссылки на одни и теже объекты, но в разных срезах
     //при удалении нужно удалять из всех коллекций
     private List<ISource> treeList = new ArrayList<>();//хранит все деревья без раздереления по типа операции
@@ -99,10 +97,11 @@ public class SourceSynchronizer implements ISourceDAO {
         boolean add = iSourceDAO.add(object);
         if (add) {
             treeList.add(object);
-            // distributionOperation(object);
+            addToCollection(object);
         }
         return add;
     }
+
 
     @Override
     public boolean update(ISource object) {
@@ -112,22 +111,34 @@ public class SourceSynchronizer implements ISourceDAO {
     @Override
     public boolean delete(ISource object) {
         if (iSourceDAO.delete(object)) {
-
-            identityMap.remove(object.getId());
-            if (object.hasParent()) {
-                //если удаляем родительский элемент
-                //то можно быстро удалить на него ссылку из родителя
-                object.getParent().remove(object);
-
-
-            } else {
-                sourceMap.get(object.getOperationType()).remove(object);
-                treeList.remove(object);
-
-            }
+            removeToCollection(object);
             return true;
         }
         return false;
+    }
+
+    private void addToCollection(ISource object) {
+        identityMap.put(object.getId(), object);
+        if (object.hasParent()) {
+            if(!object.getParent().getChilds().contains(object)){
+                object.getParent().add(object);
+            }
+        } else {
+            sourceMap.get(object.getOperationType()).add(object);
+            treeList.add(object);
+        }
+    }
+
+    private void removeToCollection(ISource object) {
+        identityMap.remove(object.getId());
+        if (object.hasParent()) {
+            //если удаляем родительский элемент
+            //то можно быстро удалить на него ссылку из родителя
+            object.getParent().remove(object);
+        } else {
+            sourceMap.get(object.getOperationType()).remove(object);
+            treeList.remove(object);
+        }
     }
 
     @Override
@@ -137,6 +148,10 @@ public class SourceSynchronizer implements ISourceDAO {
 
     public ISourceDAO getiSourceDAO() {
         return iSourceDAO;
+    }
+
+    public Map<Long, ISource> getIdentityMap() {
+        return identityMap;
     }
 }
 

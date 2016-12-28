@@ -4,18 +4,23 @@ import java.math.BigDecimal;
 import java.util.Currency;
 
 import ru.barmaglot.andoroid6.finance.core.storage.abstracts.AbstractOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.operation.ITransferOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.interfaces.operation.base.IOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
+import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
 
 
-public class TransferOperation extends AbstractOperation implements ITransferOperation {
+public class TransferOperation extends AbstractOperation implements IOperation {
 
-   private  IStorage fromStorage;
-   private  IStorage toStorage;
-   private  BigDecimal amount;
-   private  Currency currency;
 
-    @Override
+    public TransferOperation() {
+        super(OperationType.TRANSFER);
+    }
+
+    private IStorage fromStorage;// откуда переводим
+    private IStorage toStorage; // куда переводим
+    private BigDecimal fromAmount;// сумма перевода
+    private Currency fromCurrency;// в какой валюте получили деньги
+
     public IStorage getFromStorage() {
         return fromStorage;
     }
@@ -24,7 +29,6 @@ public class TransferOperation extends AbstractOperation implements ITransferOpe
         this.fromStorage = fromStorage;
     }
 
-    @Override
     public IStorage getToStorage() {
         return toStorage;
     }
@@ -33,21 +37,19 @@ public class TransferOperation extends AbstractOperation implements ITransferOpe
         this.toStorage = toStorage;
     }
 
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getFromAmount() {
+        return fromAmount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setFromAmount(BigDecimal fromAmount) {
+        this.fromAmount = fromAmount;
     }
 
-    @Override
-    public Currency getCurrency() {
-        return currency;
+    public Currency getFromCurrency() {
+        return fromCurrency;
     }
 
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setFromCurrency(Currency fromCurrency) {
+        this.fromCurrency = fromCurrency;
     }
 }

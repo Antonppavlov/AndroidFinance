@@ -4,21 +4,24 @@ import java.math.BigDecimal;
 import java.util.Currency;
 
 import ru.barmaglot.andoroid6.finance.core.storage.abstracts.AbstractOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.operation.IOutcomeOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.source.ISource;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
+import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
 
-/**
- * Created by antonpavlov on 03.12.16.
- */
 
-public class OutcomeOperation extends AbstractOperation implements IOutcomeOperation {
-    private IStorage fromStorage;
-    private ISource toSource;
-    private BigDecimal amount;
-    private Currency currency;
+// расход
+public class OutcomeOperation extends AbstractOperation {
 
-    @Override
+    public OutcomeOperation() {
+        super(OperationType.OUTCOME);
+    }
+
+    private IStorage fromStorage; // откуда потратили
+    private ISource toSource; // на что потратили
+    private BigDecimal fromAmount; // сумму, которую потратили
+    private Currency fromCurrency; // в какой валюте потратили
+
+
     public IStorage getFromStorage() {
         return fromStorage;
     }
@@ -27,7 +30,6 @@ public class OutcomeOperation extends AbstractOperation implements IOutcomeOpera
         this.fromStorage = fromStorage;
     }
 
-    @Override
     public ISource getToSource() {
         return toSource;
     }
@@ -36,21 +38,19 @@ public class OutcomeOperation extends AbstractOperation implements IOutcomeOpera
         this.toSource = toSource;
     }
 
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getFromAmount() {
+        return fromAmount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setFromAmount(BigDecimal fromAmount) {
+        this.fromAmount = fromAmount;
     }
 
-    @Override
-    public Currency getCurrency() {
-        return currency;
+    public Currency getFromCurrency() {
+        return fromCurrency;
     }
 
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setFromCurrency(Currency fromCurrency) {
+        this.fromCurrency = fromCurrency;
     }
 }

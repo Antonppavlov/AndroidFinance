@@ -14,7 +14,6 @@ import java.util.List;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
-import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.impl.storage.DefaultStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
 
@@ -133,15 +132,16 @@ public class StorageDAO implements IStorageDAO {
     }
 
     @Override
-    public boolean add(IStorage object) throws CurrencyException {
+    public boolean add(IStorage object){
         Connection connection = SQLiteConnection.getInstance().getConnection();
         try {
+            //отключаем автокоммит чтобы сделать все одной тразакцией если все условия успешно выполнятся
             connection.setAutoCommit(false);
-
 
             try (PreparedStatement preparedStatement = connection
                     .prepareStatement(
                             "INSERT FROM " + STORAGE_TABLE + "(name,parent_id) values(?,?)",
+                            //получаем назад сгенерированный ключ
                             Statement.RETURN_GENERATED_KEYS)
                  ;) {
                 preparedStatement.setString(1, object.getName());
@@ -158,11 +158,13 @@ public class StorageDAO implements IStorageDAO {
                     try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
 
                         while (rs.next()) {
+                            //записываем сгенеррированый id к объекту
                             object.setId(rs.getLong(1));
                         }
 
                         for (Currency currency : object.getAvailableCurrencies()) {
                             if (!addCurrency(object, currency, object.getAmount(currency))) {
+                                //если хоть одну валюту не удасца добавить то сделаем роллбек всей транзакции
                                 connection.rollback();
                                 return false;
                             }

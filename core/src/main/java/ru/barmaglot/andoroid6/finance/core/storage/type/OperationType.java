@@ -14,7 +14,7 @@ public enum OperationType {
     //конвертация
     CONVERT(4),;
 
-    private static Map<Integer, OperationType> map = new HashMap<>();
+    private static Map<Long, OperationType> map = new HashMap<>();
 
     static {
         for (OperationType operationType : OperationType.values()) {
@@ -22,17 +22,17 @@ public enum OperationType {
         }
     }
 
-    private Integer id;
+    private long id;
 
-    private OperationType(Integer id) {
+    private OperationType(long id) {
         this.id = id;
     }
 
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
-    public static OperationType getType(Integer id) {
+    public static OperationType getType(long id) {
         return map.get(id);
     }
 
