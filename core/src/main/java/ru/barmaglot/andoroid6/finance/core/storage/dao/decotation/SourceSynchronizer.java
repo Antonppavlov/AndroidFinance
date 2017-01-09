@@ -7,14 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.ISourceDAO;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.source.ISource;
-import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.source.ISource;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 import ru.barmaglot.andoroid6.finance.core.storage.utils.TreeUtils;
 
-import static ru.barmaglot.andoroid6.finance.core.storage.type.OperationType.CONVERT;
-import static ru.barmaglot.andoroid6.finance.core.storage.type.OperationType.INCOME;
-import static ru.barmaglot.andoroid6.finance.core.storage.type.OperationType.OUTCOME;
-import static ru.barmaglot.andoroid6.finance.core.storage.type.OperationType.TRANSFER;
+import static ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType.CONVERT;
+import static ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType.INCOME;
+import static ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType.OUTCOME;
+import static ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType.TRANSFER;
 
 
 public class SourceSynchronizer implements ISourceDAO {
@@ -93,7 +94,7 @@ public class SourceSynchronizer implements ISourceDAO {
     }
 
     @Override
-    public boolean add(ISource object) {
+    public boolean add(ISource object) throws CurrencyException {
         boolean add = iSourceDAO.add(object);
         if (add) {
             treeList.add(object);
@@ -120,8 +121,8 @@ public class SourceSynchronizer implements ISourceDAO {
     private void addToCollection(ISource object) {
         identityMap.put(object.getId(), object);
         if (object.hasParent()) {
-            if(!object.getParent().getChilds().contains(object)){
-                object.getParent().add(object);
+            if(!object.getParent().getListChild().contains(object)){
+                object.getParent().addChild(object);
             }
         } else {
             sourceMap.get(object.getOperationType()).add(object);
@@ -134,7 +135,7 @@ public class SourceSynchronizer implements ISourceDAO {
         if (object.hasParent()) {
             //если удаляем родительский элемент
             //то можно быстро удалить на него ссылку из родителя
-            object.getParent().remove(object);
+            object.getParent().removeChild(object);
         } else {
             sourceMap.get(object.getOperationType()).remove(object);
             treeList.remove(object);

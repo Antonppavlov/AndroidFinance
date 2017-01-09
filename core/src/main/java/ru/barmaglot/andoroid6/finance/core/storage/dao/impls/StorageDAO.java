@@ -14,8 +14,9 @@ import java.util.List;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.storage.DefaultStorage;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.storage.DefaultStorage;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 
 public class StorageDAO implements IStorageDAO {
 
@@ -87,9 +88,8 @@ public class StorageDAO implements IStorageDAO {
 
     @Override
     public List<IStorage> getAll() {
-        if (!storageList.isEmpty()) {
-            storageList.clear();
-        }
+        storageList.clear();
+
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
                         "SELECT * FROM " + STORAGE_TABLE + " order by parent_id")
@@ -101,6 +101,7 @@ public class StorageDAO implements IStorageDAO {
                 defaultStorage.setId(resultSet.getLong("id"));
                 defaultStorage.setName(resultSet.getString("name"));
                 defaultStorage.setParentId(resultSet.getLong("parent_id"));
+                storageList.add(defaultStorage);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -120,6 +121,7 @@ public class StorageDAO implements IStorageDAO {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
+                storage=new DefaultStorage();
                 storage.setId(resultSet.getLong("id"));
                 storage.setName(resultSet.getString("name"));
                 storage.setParentId(resultSet.getLong("parent_id"));
@@ -132,7 +134,7 @@ public class StorageDAO implements IStorageDAO {
     }
 
     @Override
-    public boolean add(IStorage object){
+    public boolean add(IStorage object) throws CurrencyException {
         Connection connection = SQLiteConnection.getInstance().getConnection();
         try {
             //отключаем автокоммит чтобы сделать все одной тразакцией если все условия успешно выполнятся

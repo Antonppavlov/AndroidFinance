@@ -2,8 +2,8 @@ package ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces;
 
 import java.util.List;
 
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.source.ISource;
-import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.source.ISource;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 
 /**
  * Created by antonpavlov on 13.12.16.

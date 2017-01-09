@@ -9,17 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IOperationDAO;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.operation.ConvertOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.operation.IncomeOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.operation.OutcomeOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.operation.TransferOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.operation.base.IOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.ConvertOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.IncomeOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.OutcomeOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.TransferOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.operation.IOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 
-import static ru.barmaglot.andoroid6.finance.core.storage.type.OperationType.CONVERT;
-import static ru.barmaglot.andoroid6.finance.core.storage.type.OperationType.INCOME;
-import static ru.barmaglot.andoroid6.finance.core.storage.type.OperationType.OUTCOME;
-import static ru.barmaglot.andoroid6.finance.core.storage.type.OperationType.TRANSFER;
+import static ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType.CONVERT;
+import static ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType.INCOME;
+import static ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType.OUTCOME;
+import static ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType.TRANSFER;
 
 public class OperationSynchronizer implements IOperationDAO {
 
@@ -99,7 +100,7 @@ public class OperationSynchronizer implements IOperationDAO {
 
     @Override
     // При добавлении операции – нужно сначала добавить запись в БД, затем добавить новую операцию во все коллекции и обновить баланс соотв. хранилища
-    public boolean add(IOperation operation) {
+    public boolean add(IOperation operation) throws CurrencyException {
         if (iOperationDAO.add(operation)) {// если в БД добавился нормально
             addToCollections(operation);// добавляем в коллекции
 

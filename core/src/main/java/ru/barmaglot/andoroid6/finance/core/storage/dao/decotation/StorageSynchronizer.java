@@ -10,7 +10,7 @@ import java.util.Map;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.utils.TreeUtils;
 
 
@@ -51,7 +51,7 @@ public class StorageSynchronizer implements IStorageDAO {
     }
 
     @Override
-    public boolean add(IStorage object) {
+    public boolean add(IStorage object) throws CurrencyException {
         return iStorageDAO.add(object);
     }
 
@@ -72,7 +72,7 @@ public class StorageSynchronizer implements IStorageDAO {
     private void removeToCollection(IStorage object) {
         identityMap.remove(object.getId());
         if (object.hasParent()) {
-            object.getParent().remove(object);
+            object.getParent().removeChild(object);
         } else {
             treeList.remove(object);
         }
@@ -96,8 +96,8 @@ public class StorageSynchronizer implements IStorageDAO {
     private void addToCollection(IStorage storage) {
         identityMap.put(storage.getId(), storage);
         if (storage.hasParent()) {
-            if (!storage.getParent().getChilds().contains(storage)) {
-                storage.getParent().add(storage);
+            if (!storage.getParent().getListChild().contains(storage)) {
+                storage.getParent().addChild(storage);
             }
         } else {
             treeList.add(storage);

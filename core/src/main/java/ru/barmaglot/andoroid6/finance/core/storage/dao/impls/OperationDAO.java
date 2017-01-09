@@ -10,17 +10,17 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
-import ru.barmaglot.andoroid6.finance.core.storage.abstracts.AbstractOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.abstracts.AbstractOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IOperationDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.operation.ConvertOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.operation.IncomeOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.operation.OutcomeOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.operation.TransferOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.operation.base.IOperation;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.source.ISource;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.storage.IStorage;
-import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.ConvertOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.IncomeOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.OutcomeOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.TransferOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.operation.IOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.source.ISource;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 
 
 public class OperationDAO implements IOperationDAO {

@@ -10,9 +10,9 @@ import java.util.List;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.ISourceDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
-import ru.barmaglot.andoroid6.finance.core.storage.impl.source.DefaultSource;
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.source.ISource;
-import ru.barmaglot.andoroid6.finance.core.storage.type.OperationType;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.source.DefaultSource;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.source.ISource;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 
 // TODO: 20.12.16 можно общие метод для дао слоев вынести в отдельный класс
 
@@ -30,6 +30,7 @@ public class SourceDAO implements ISourceDAO {
                 .prepareStatement(
                         "SELECT * FROM " + SOURCE_TABLE + " order by parent_id");) {
             ResultSet resultSet = preparedStatement.executeQuery();
+
             while (resultSet.next()) {
                 DefaultSource source = new DefaultSource();
                 source.setId(resultSet.getLong("id"));
@@ -38,6 +39,7 @@ public class SourceDAO implements ISourceDAO {
                 source.setParentId(resultSet.getInt("parent_id"));
                 sourceList.add(source);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -101,11 +103,11 @@ public class SourceDAO implements ISourceDAO {
 
     @Override
     public boolean add(ISource object) {
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
-                .prepareStatement(
-                        "INSERT INTO " + SOURCE_TABLE + "(name, parent_id, operation_type_id) values(?,?,?)",
-                        Statement.RETURN_GENERATED_KEYS)
-             ;) {
+        try (PreparedStatement preparedStatement =
+                     SQLiteConnection.getInstance().getConnection().prepareStatement(
+                             "insert into " + SOURCE_TABLE + "(name, parent_id, operation_type_id) values(?,?,?)",
+                             Statement.RETURN_GENERATED_KEYS);) {
+
             preparedStatement.setString(1, object.getName());
             if (object.hasParent()) {
                 preparedStatement.setLong(2, object.getParent().getId());

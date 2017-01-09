@@ -2,6 +2,7 @@ package ru.barmaglot.andoroid6.finance.core.storage.run;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.SourceSynchronizer;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.SourceDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
 
 public class Start {
     public static void main(String[] args) {
@@ -22,5 +23,6 @@ public class Start {
 
       //  new StorageDAO().getAll();
         System.out.println( new SourceSynchronizer(new SourceDAO()).getAll().get(1));
+        System.out.println((new StorageDAO()).getAll());
     }
 }

@@ -2,7 +2,7 @@ package ru.barmaglot.andoroid6.finance.core.storage.utils;
 
 import java.util.List;
 
-import ru.barmaglot.andoroid6.finance.core.storage.interfaces.ITreeNode;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.ITreeNode;
 
 /**
  * Created by antonpavlov on 10.12.16.
@@ -18,7 +18,7 @@ public class TreeUtils<T extends ITreeNode> {
             //искать во всех корневых
             for (T currencyNode : nodeList) {
                 if (currencyNode.getId() == parentId) {
-                    currencyNode.add(newNode);
+                    currencyNode.addChild(newNode);
                     return;
                 }
                 //если родитель не найден в корневых, то ищем родителя среди дочерних элементов
@@ -26,7 +26,7 @@ public class TreeUtils<T extends ITreeNode> {
                     ITreeNode node = recursiveSearch(parentId, currencyNode);
                     //если нашли в дочерних
                     if (node != null) {
-                        node.add(newNode);
+                        node.addChild(newNode);
                         return;
                     }
                 }
@@ -36,10 +36,10 @@ public class TreeUtils<T extends ITreeNode> {
     }
 
     private ITreeNode recursiveSearch(long parentId, T currencyNode) {
-        for (ITreeNode node : currencyNode.getChilds()) {
+        for (ITreeNode node : currencyNode.getListChild()) {
             if (node.getId() == parentId) {
                 return node;
-            } else if (node.hasChilds()) {
+            } else if (node.hasChild()) {
                 recursiveSearch(node.getId(), currencyNode);
             }
         }
