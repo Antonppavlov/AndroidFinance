@@ -112,7 +112,7 @@ public class SourceDAO implements ISourceDAO {
             if (object.hasParent()) {
                 preparedStatement.setLong(2, object.getParent().getId());
             } else {
-                preparedStatement.setLong(2, Types.BIGINT);
+               // preparedStatement.setLong(2, );
             }
 
             preparedStatement.setLong(3, object.getOperationType().getId());
@@ -136,7 +136,7 @@ public class SourceDAO implements ISourceDAO {
     public boolean update(ISource object) {
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
-                        "UPDATE INTO " + SOURCE_TABLE + "set name=? where id=?")
+                        "UPDATE " + SOURCE_TABLE + " set name=? where id=?")
              ;) {
             preparedStatement.setString(1, object.getName());
             preparedStatement.setLong(2, object.getId());
@@ -156,7 +156,7 @@ public class SourceDAO implements ISourceDAO {
     public boolean delete(ISource object) {
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
-                        "DELETE FROM " + SOURCE_TABLE + "where id=?")
+                        "DELETE FROM " + SOURCE_TABLE + " where id=?")
              ;) {
 
             preparedStatement.setLong(1, object.getId());
