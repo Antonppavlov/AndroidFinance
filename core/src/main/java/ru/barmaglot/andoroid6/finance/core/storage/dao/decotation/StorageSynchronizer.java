@@ -1,6 +1,7 @@
 package ru.barmaglot.andoroid6.finance.core.storage.dao.decotation;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
@@ -83,7 +84,7 @@ public class StorageSynchronizer implements IStorageDAO {
     }
 
     @Override
-    public boolean addCurrency(IStorage storage, Currency currency, BigDecimal amount) throws CurrencyException {
+    public boolean addCurrency(IStorage storage, Currency currency, BigDecimal amount) throws CurrencyException, SQLException {
         if (iStorageDAO.addCurrency(storage, currency, amount)) {
             storage.addCurrency(currency);
             addToCollection(storage);
@@ -127,4 +128,9 @@ public class StorageSynchronizer implements IStorageDAO {
         return false;
     }
 
+
+
+    public Map<Long, IStorage> getIdentityMap() {
+        return identityMap;
+    }
 }
