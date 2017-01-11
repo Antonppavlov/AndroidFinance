@@ -24,6 +24,11 @@ public abstract class AbstractOperation implements IOperation {
         this.description = description;
         this.operationType = operationType;
     }
+    public AbstractOperation(Calendar dateTime, String description, OperationType operationType) {
+        this.dateTime = dateTime;
+        this.description = description;
+        this.operationType = operationType;
+    }
 
     public AbstractOperation(long id, OperationType operationType) {
         this.id = id;

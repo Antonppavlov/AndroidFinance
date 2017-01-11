@@ -55,6 +55,7 @@ public class DefaultStorage extends AbstractTreeNode implements IStorage {
     }
 
 
+
     @Override
     public void addCurrency(Currency currency) throws CurrencyException {
         if (currencyList.contains(currency)) {

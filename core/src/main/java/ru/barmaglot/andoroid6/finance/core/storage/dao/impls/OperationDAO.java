@@ -10,9 +10,9 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
-import ru.barmaglot.andoroid6.finance.core.storage.objects.abstracts.AbstractOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IOperationDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.abstracts.AbstractOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.ConvertOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.IncomeOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.OutcomeOperation;
@@ -96,7 +96,7 @@ public class OperationDAO implements IOperationDAO {
     }
 
     @Override
-    public boolean add(IOperation object){
+    public boolean add(IOperation object) {
         String sql = createSQL(object.getOperationType());
 
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection().prepareStatement(
@@ -212,9 +212,9 @@ public class OperationDAO implements IOperationDAO {
     @Override
     public boolean delete(IOperation object) {
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection().prepareStatement(
-                "DELETE FROM "+OPERATION_TABLE+" where id=?"
+                "DELETE FROM " + OPERATION_TABLE + " where id=?"
         );) {
-            preparedStatement.setLong(1,object.getId());
+            preparedStatement.setLong(1, object.getId());
 
             if (preparedStatement.executeUpdate() == 1) { //если удалена одна запить то выбрасываем тру
                 return true;
@@ -303,4 +303,11 @@ public class OperationDAO implements IOperationDAO {
 
     }
 
+    public Map<Long, ISource> getSourceIdentityMap() {
+        return sourceIdentityMap;
+    }
+
+    public Map<Long, IStorage> getStorageIdentityMap() {
+        return storageIdentityMap;
+    }
 }

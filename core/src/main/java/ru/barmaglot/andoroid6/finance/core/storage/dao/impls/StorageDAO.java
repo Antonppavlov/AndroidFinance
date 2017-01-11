@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -16,7 +15,6 @@ import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.storage.DefaultStorage;
-import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.source.ISource;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 
 public class StorageDAO implements IStorageDAO {
@@ -208,27 +206,11 @@ public class StorageDAO implements IStorageDAO {
         return false;
     }
 
-//    @Override
-//    public boolean delete(IStorage treeNode) {
-//        // TODO: 07.12.16 проверять если есть заведенные валюты и операции по данному хранилищу то запрещать удаление
-//        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
-//                .prepareStatement(
-//                        "DELETE FROM " + STORAGE_TABLE + " where id=?")
-//             ;) {
-//            preparedStatement.setLong(1, treeNode.getId());
-//            System.out.println(treeNode.getId());
-//            if (preparedStatement.executeUpdate() == 1) {
-//                return true;
-//            }
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return false;
-//    }
 
     @Override
     public boolean delete(IStorage object) {
+          // TODO: 07.12.16 проверять если есть заведенные валюты и операции по данному хранилищу то запрещать удаление
+
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
                 .prepareStatement(
                         "DELETE FROM " + STORAGE_TABLE + " where id=?")

@@ -11,21 +11,17 @@ import java.util.List;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
-import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.source.DefaultSource;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.storage.DefaultStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.type.CurrencyType;
 
-import static java.lang.Thread.sleep;
-
 public class StorageDAOTest {
 
     private final StorageDAO storageDAO = new StorageDAO();
+    private final CurrencyType currencyType = CurrencyType.USD;
 
-    CurrencyType currencyType = CurrencyType.USD;
 
-
-    @Test()
+    @Test
     public void addCurrency() throws CurrencyException, SQLException {
         IStorage iStorage = storageDAO.getAll().get(0);
         Currency currency = Currency.getInstance(currencyType.getCode());
@@ -84,6 +80,10 @@ public class StorageDAOTest {
         List<IStorage> all = storageDAO.getAll();
         IStorage iStorage = all.get(all.size() - 1);
         Assert.assertNotNull(iStorage);
+
+        for (IStorage storage: all){
+            System.out.println(iStorage.getAvailableCurrencies());
+        }
     }
 
     @Test
@@ -105,7 +105,7 @@ public class StorageDAOTest {
 
         IStorage iStorage = storageDAO.get(defaultStorage.getId());
 
-        Assert.assertEquals(iStorage,defaultStorage);
+        Assert.assertEquals(iStorage, defaultStorage);
     }
 
     @Test

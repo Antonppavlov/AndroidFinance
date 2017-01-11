@@ -10,20 +10,19 @@ import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.ITreeNode;
 
 // TODO изменить тип BigDecimal на готовый класс по работе с деньгами Money
-public interface IStorage extends ITreeNode{
+public interface IStorage extends ITreeNode {
 
 
     // получение баланса (остатка)
     Map<Currency, BigDecimal> getCurrencyAmounts(); // остаток по каждой доступной валюте в хранилище
 
-    BigDecimal getAmount(Currency currency) throws CurrencyException ; // остаток по определенной валюте
+    BigDecimal getAmount(Currency currency) throws CurrencyException; // остаток по определенной валюте
 
     BigDecimal getApproxAmount(Currency currency);// примерный остаток в переводе всех денег в одну валюту
 
 
     // изменение баланса
     void updateAmount(BigDecimal amount, Currency currency) throws AmountException, CurrencyException; // изменение баланса по определенной валюте
-
 
 
     // работа с валютой

@@ -19,7 +19,6 @@ import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 @RunWith(Parameterized.class)
 public class SourceDAOTest {
 
-
     private final SourceDAO sourceDAO = new SourceDAO();
 
     @Parameterized.Parameter
@@ -97,8 +96,7 @@ public class SourceDAOTest {
 
         Assert.assertTrue(sourceDAO.delete(defaultSource));
 
-    //    ISource source = sourceDAO.get(defaultSource.getId());
-
-      //  Assert.assertNull(defaultSource);
+        //ISource source = sourceDAO.get(defaultSource.getId());
+        //Assert.assertNull(defaultSource);
     }
 }
