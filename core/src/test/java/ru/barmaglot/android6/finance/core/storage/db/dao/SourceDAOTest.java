@@ -95,7 +95,7 @@ public class SourceDAOTest {
         defaultSource.setOperationType(operationType);
         sourceDAO.add(defaultSource);
 
-        sourceDAO.delete(defaultSource);
+        Assert.assertTrue(sourceDAO.delete(defaultSource));
 
         ISource source = sourceDAO.get(defaultSource.getId());
 
