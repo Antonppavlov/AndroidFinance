@@ -80,10 +80,6 @@ public class StorageDAOTest {
         List<IStorage> all = storageDAO.getAll();
         IStorage iStorage = all.get(all.size() - 1);
         Assert.assertNotNull(iStorage);
-
-        for (IStorage storage: all){
-            System.out.println(iStorage.getAvailableCurrencies());
-        }
     }
 
     @Test

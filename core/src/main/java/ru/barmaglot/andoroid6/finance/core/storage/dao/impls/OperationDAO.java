@@ -42,10 +42,13 @@ public class OperationDAO implements IOperationDAO {
     @Override
     public List<IOperation> getList(OperationType operationType) {
         List<IOperation> operationList = new ArrayList<>();
+
         try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection().prepareStatement(
                 "SELECT * FROM " + OPERATION_TABLE + " where type_id=?")) {
             preparedStatement.setLong(1, operationType.getId());
+
             ResultSet resultSet = preparedStatement.executeQuery();
+
             while (resultSet.next()) {
                 operationList.add(fillOperation(resultSet));
             }
@@ -207,6 +210,7 @@ public class OperationDAO implements IOperationDAO {
     @Override
     public boolean update(IOperation object) {
         return false;
+        // TODO: 12.01.2017 реализовать
     }
 
     @Override
@@ -241,7 +245,8 @@ public class OperationDAO implements IOperationDAO {
         Calendar datetime = Calendar.getInstance();
         datetime.setTimeInMillis(resultSet.getLong("datetime"));
         operation.setDateTime(datetime);
-        return null;
+
+        return operation;
     }
 
     private AbstractOperation createOperation(OperationType operationType, ResultSet resultSet) throws SQLException {

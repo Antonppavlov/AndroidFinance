@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.database.SQLiteConnection;
@@ -23,6 +25,32 @@ public class StorageDAO implements IStorageDAO {
     private static final String STORAGE_TABLE = "storage";
 
     private List<IStorage> storageList = new ArrayList<>();
+
+    @Override
+    public Map<Currency, BigDecimal> getAllCurrency(IStorage storage) {
+
+        Map<Currency, BigDecimal> currencyMap = new HashMap<>();
+
+        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+                .prepareStatement(
+                        "SELECT * FROM " + CURRENCY_AMOUNT_TABLE + " where storage_id=?")
+             ;) {
+            preparedStatement.setLong(1, storage.getId());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Currency currency_code = Currency.getInstance(resultSet.getString("currency_code"));
+                BigDecimal amount = resultSet.getBigDecimal("amount");
+                currencyMap.put(currency_code,amount);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return currencyMap;
+    }
+
 
     @Override
     public boolean addCurrency(IStorage storage, Currency currency, BigDecimal amount) throws SQLException {
@@ -86,6 +114,7 @@ public class StorageDAO implements IStorageDAO {
         return false;
     }
 
+
     @Override
     public List<IStorage> getAll() {
         storageList.clear();
@@ -101,6 +130,9 @@ public class StorageDAO implements IStorageDAO {
                 defaultStorage.setId(resultSet.getLong("id"));
                 defaultStorage.setName(resultSet.getString("name"));
                 defaultStorage.setParentId(resultSet.getLong("parent_id"));
+                Map<Currency, BigDecimal> allCurrencyInStorage = getAllCurrency(defaultStorage);
+                defaultStorage.setCurrencyAmounts(allCurrencyInStorage);
+                defaultStorage.setAvailableCurrencies(new ArrayList<Currency>(allCurrencyInStorage.keySet()));
                 storageList.add(defaultStorage);
             }
         } catch (SQLException e) {
@@ -218,7 +250,6 @@ public class StorageDAO implements IStorageDAO {
 
             preparedStatement.setLong(1, object.getId());
 
-            System.out.println(object.getId());
             if (preparedStatement.executeUpdate() == 1) { //если удалена одна запить то выбрасываем тру
 
                 return true;

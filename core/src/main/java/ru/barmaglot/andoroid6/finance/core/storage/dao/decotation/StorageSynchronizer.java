@@ -128,6 +128,10 @@ public class StorageSynchronizer implements IStorageDAO {
         return false;
     }
 
+    @Override
+    public Map<Currency, BigDecimal> getAllCurrency(IStorage storage) {
+        return null;
+    }
 
 
     public Map<Long, IStorage> getIdentityMap() {

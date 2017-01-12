@@ -23,6 +23,18 @@ public class OperationDAOTest {
             new SourceSynchronizer(new SourceDAO()).getIdentityMap(),
             new StorageSynchronizer(new StorageDAO()).getIdentityMap());
 
+    private final long id = 1;
+    private final IncomeOperation incomeOperation = new IncomeOperation(
+            Calendar.getInstance(),
+            "купил продуктов",
+            OperationType.INCOME,
+            operationDAO.getSourceIdentityMap().get(id),
+            operationDAO.getStorageIdentityMap().get(id),
+            BigDecimal.valueOf(10),
+            operationDAO.getStorageIdentityMap().get(id).getAvailableCurrencies().get(0)
+    );
+
+
     @Test
     public void getListOperationType() {
         OperationType operationType = OperationType.INCOME;
@@ -48,27 +60,31 @@ public class OperationDAOTest {
 
     @Test
     public void add() throws CurrencyException {
-        IncomeOperation incomeOperation;
-        incomeOperation = new IncomeOperation(
-                Calendar.getInstance(),
-                "купил продуктов",
-                OperationType.INCOME,
-                operationDAO.getSourceIdentityMap().get(1),
-                operationDAO.getStorageIdentityMap().get(1),
-                BigDecimal.valueOf(10),
-                operationDAO.getStorageIdentityMap().get(1).getAvailableCurrencies().get(0)
-        );
+        operationDAO.add(incomeOperation);
 
+        IOperation iOperation = operationDAO.get(incomeOperation.getId());
 
-       operationDAO.add(incomeOperation);
+        Assert.assertEquals(incomeOperation.getId(), iOperation.getId());
 
     }
 
     @Test
     public void update() {
+        operationDAO.add(incomeOperation);
+        Assert.assertNotNull(operationDAO.get(incomeOperation.getId()));
+        String name = "Test Description";
+        incomeOperation.setDescription(name);
+        Assert.assertTrue( operationDAO.update(incomeOperation));
+
+       Assert.assertEquals(operationDAO.get(incomeOperation.getId()).getDescription(), name);
     }
 
     @Test
     public void delete() {
+        operationDAO.add(incomeOperation);
+        Assert.assertNotNull(operationDAO.get(incomeOperation.getId()));
+
+        operationDAO.delete(incomeOperation);
+        Assert.assertNull(operationDAO.get(incomeOperation.getId()));
     }
 }

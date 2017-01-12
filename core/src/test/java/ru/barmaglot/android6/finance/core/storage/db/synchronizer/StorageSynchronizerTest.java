@@ -2,7 +2,12 @@ package ru.barmaglot.android6.finance.core.storage.db.synchronizer;
 
 import org.junit.Test;
 
+import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.StorageSynchronizer;
+import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
+
 public class StorageSynchronizerTest {
+
+    private final StorageSynchronizer storageSynchronizer = new StorageSynchronizer(new StorageDAO());
 
     @Test
     public void getAll(){

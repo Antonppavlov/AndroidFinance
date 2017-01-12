@@ -2,6 +2,7 @@ package ru.barmaglot.android6.finance.core.storage.objects.storage;
 
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -13,6 +14,8 @@ import java.util.Currency;
 
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.storage.DefaultStorage;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
+import ru.barmaglot.andoroid6.finance.core.storage.type.CurrencyType;
 
 @RunWith(Parameterized.class)
 public class DefaultStorageTest {
@@ -21,21 +24,21 @@ public class DefaultStorageTest {
     private final DefaultStorage defaultStorage = new DefaultStorage();
 
     @Parameterized.Parameter
-    public Currency currency;
+    public CurrencyType currencyCode;
 
+    private Currency currency;
 
     @Parameterized.Parameters
-    public static Collection<Currency> getParameters() {
+    public static Collection<CurrencyType> getParameters() {
         return Arrays.asList(
-                Currency.getInstance("RUB"),
-                Currency.getInstance("EUR"),
-                Currency.getInstance("USD")
+                CurrencyType.values()
         );
     }
 
-
-
-
+    @Before
+    public void setUp() {
+        currency= Currency.getInstance(currencyCode.getCode());
+    }
 
     @Test
     public void checkAddCurrency() throws CurrencyException {
@@ -44,11 +47,13 @@ public class DefaultStorageTest {
         Assert.assertEquals(defaultStorage.getAvailableCurrencies().get(0), currency);
     }
 
+
     @Test(expected = CurrencyException.class)
     public void checkErrorWhenRepeatAddCurrency() throws CurrencyException {
         defaultStorage.addCurrency(currency);
         defaultStorage.addCurrency(currency);
     }
+
 
     @Test
     public void checkGetSumInCurrency() throws CurrencyException {
@@ -70,6 +75,7 @@ public class DefaultStorageTest {
 
         Assert.assertEquals(sumCurrencyRub, money);
     }
+
 
     @Test(expected = CurrencyException.class)
     public void checkDeleteCurrency() throws CurrencyException {
