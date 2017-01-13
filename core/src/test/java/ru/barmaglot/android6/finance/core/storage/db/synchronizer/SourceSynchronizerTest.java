@@ -1,37 +1,106 @@
 package ru.barmaglot.android6.finance.core.storage.db.synchronizer;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.SourceSynchronizer;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.SourceDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.source.DefaultSource;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.source.ISource;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 
+@RunWith(Parameterized.class)
 public class SourceSynchronizerTest {
 
     private final SourceSynchronizer sourceSynchronizer = new SourceSynchronizer(new SourceDAO());
 
+    @Parameterized.Parameter
+    public OperationType operationType;
+
+    @Parameterized.Parameters
+    public static Collection<OperationType> getParameters() {
+        return Arrays.asList(
+                OperationType.values()
+        );
+    }
+
+
     @Test
     public void getIdentityMap() {
+        Map<Long, ISource> identityMap = sourceSynchronizer.getIdentityMap();
+
 
     }
 
     @Test
     public void getSourceList() {
+        List<ISource> listSource = sourceSynchronizer.getListSource(operationType);
+
+        for (ISource iSource : listSource) {
+            Assert.assertEquals(iSource.getOperationType(), operationType);
+        }
 
     }
 
     @Test
     public void getAll() {
-
+        Assert.assertTrue(sourceSynchronizer.getAll().size() > 0);
     }
 
     @Test
     public void get() {
+        List<ISource> iSourceList = sourceSynchronizer.getAll();
 
+        ISource iSource = iSourceList.get(iSourceList.size() - 1);
+
+        Assert.assertNotNull(iSource);
     }
 
     @Test
-    public void add() {
+    public void addSourceNotParrent() throws CurrencyException {
+        DefaultSource defaultSource = new DefaultSource();
+        defaultSource.setName("Test Source");
+        defaultSource.setOperationType(operationType);
 
+        Assert.assertTrue(sourceSynchronizer.add(defaultSource));
+
+        Assert.assertTrue(sourceSynchronizer.getTreeList().contains(defaultSource));
+        Assert.assertEquals(sourceSynchronizer.getIdentityMap().get(defaultSource.getId()), defaultSource);
+        Assert.assertTrue(sourceSynchronizer.getListSource(defaultSource.getOperationType()).contains(defaultSource));
+    }
+
+    @Test
+    public void addSourceHaveParent() throws CurrencyException {
+        long parentId = sourceSynchronizer.getAll().get(0).getId();
+
+        DefaultSource defaultSource = new DefaultSource();
+        defaultSource.setName("Test Sourc");
+        defaultSource.setOperationType(operationType);
+        defaultSource.setParent(sourceSynchronizer.get(parentId));
+
+        Assert.assertTrue(sourceSynchronizer.add(defaultSource));
+
+        List<ISource> treeList = sourceSynchronizer.getTreeList();
+
+        int treeListIdSource=0;
+        for (int i = 0; i < treeList.size(); i++) {
+            if (treeList.get(0).getId() == parentId) {
+                treeListIdSource = i;
+                System.out.println(i);
+            }
+        }
+
+        Assert.assertTrue(treeList.get(treeListIdSource).getListChild().contains(defaultSource));
+        Assert.assertEquals(sourceSynchronizer.getIdentityMap().get(defaultSource.getId()), defaultSource);
+        Assert.assertTrue(sourceSynchronizer.getListSource(defaultSource.getOperationType()).contains(defaultSource));
     }
 
     @Test

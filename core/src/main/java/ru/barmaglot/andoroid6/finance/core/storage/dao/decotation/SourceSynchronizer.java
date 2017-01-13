@@ -45,9 +45,6 @@ public class SourceSynchronizer implements ISourceDAO {
         distributionOperation(treeList);
     }
 
-    public List<ISource> getSourceList(OperationType operationType) {
-        return sourceMap.get(operationType);
-    }
 
 
     @Override
@@ -153,6 +150,14 @@ public class SourceSynchronizer implements ISourceDAO {
 
     public Map<Long, ISource> getIdentityMap() {
         return identityMap;
+    }
+
+    public List<ISource> getTreeList() {
+        return treeList;
+    }
+
+    public Map<OperationType, List<ISource>> getSourceMap() {
+        return sourceMap;
     }
 }
 
