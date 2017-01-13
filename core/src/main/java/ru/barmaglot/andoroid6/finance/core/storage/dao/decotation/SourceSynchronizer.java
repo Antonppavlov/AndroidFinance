@@ -117,12 +117,13 @@ public class SourceSynchronizer implements ISourceDAO {
 
     private void addToCollection(ISource object) {
         identityMap.put(object.getId(), object);
+        sourceMap.get(object.getOperationType()).add(object);
         if (object.hasParent()) {
             if(!object.getParent().getListChild().contains(object)){
                 object.getParent().addChild(object);
             }
         } else {
-            sourceMap.get(object.getOperationType()).add(object);
+
             treeList.add(object);
         }
     }

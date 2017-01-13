@@ -1,9 +1,11 @@
 package ru.barmaglot.android6.finance.core.storage.db.synchronizer;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.StorageSynchronizer;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 
 public class StorageSynchronizerTest {
 
@@ -11,11 +13,19 @@ public class StorageSynchronizerTest {
 
     @Test
     public void getAll(){
-
+        Assert.assertTrue(storageSynchronizer.getAll().size()>1);
     }
 
     @Test
     public void get(){
+        IStorage lastStorageInCollection = storageSynchronizer.getAll().get(storageSynchronizer.getAll().size() - 1);
+
+        IStorage iStorage = storageSynchronizer.get(lastStorageInCollection.getId());
+
+        Assert.assertEquals(
+                lastStorageInCollection,
+                iStorage
+                );
 
     }
 

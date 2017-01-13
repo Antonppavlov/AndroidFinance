@@ -12,6 +12,7 @@ import java.util.Map;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.SourceSynchronizer;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.SourceDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.ISourceDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.source.DefaultSource;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.source.ISource;
@@ -37,7 +38,8 @@ public class SourceSynchronizerTest {
     public void getIdentityMap() {
         Map<Long, ISource> identityMap = sourceSynchronizer.getIdentityMap();
 
-
+        Assert.assertNotNull(identityMap);
+        Assert.assertTrue(identityMap instanceof Map);
     }
 
     @Test
@@ -65,7 +67,7 @@ public class SourceSynchronizerTest {
     }
 
     @Test
-    public void addSourceNotParrent() throws CurrencyException {
+    public void addSourceNotParent() throws CurrencyException {
         DefaultSource defaultSource = new DefaultSource();
         defaultSource.setName("Test Source");
         defaultSource.setOperationType(operationType);
@@ -75,11 +77,14 @@ public class SourceSynchronizerTest {
         Assert.assertTrue(sourceSynchronizer.getTreeList().contains(defaultSource));
         Assert.assertEquals(sourceSynchronizer.getIdentityMap().get(defaultSource.getId()), defaultSource);
         Assert.assertTrue(sourceSynchronizer.getListSource(defaultSource.getOperationType()).contains(defaultSource));
+
+
+        sourceSynchronizer.delete(defaultSource);
     }
 
     @Test
     public void addSourceHaveParent() throws CurrencyException {
-        long parentId = sourceSynchronizer.getAll().get(0).getId();
+        long parentId = 1;
 
         DefaultSource defaultSource = new DefaultSource();
         defaultSource.setName("Test Sourc");
@@ -90,9 +95,9 @@ public class SourceSynchronizerTest {
 
         List<ISource> treeList = sourceSynchronizer.getTreeList();
 
-        int treeListIdSource=0;
+        int treeListIdSource = 0;
         for (int i = 0; i < treeList.size(); i++) {
-            if (treeList.get(0).getId() == parentId) {
+            if (treeList.get(i).getId() == parentId) {
                 treeListIdSource = i;
                 System.out.println(i);
             }
@@ -101,25 +106,50 @@ public class SourceSynchronizerTest {
         Assert.assertTrue(treeList.get(treeListIdSource).getListChild().contains(defaultSource));
         Assert.assertEquals(sourceSynchronizer.getIdentityMap().get(defaultSource.getId()), defaultSource);
         Assert.assertTrue(sourceSynchronizer.getListSource(defaultSource.getOperationType()).contains(defaultSource));
+
+
+        sourceSynchronizer.delete(defaultSource);
     }
 
     @Test
-    public void update() {
+    public void update() throws CurrencyException {
+        DefaultSource defaultSource = new DefaultSource();
+        defaultSource.setName("Test Source");
+        defaultSource.setOperationType(operationType);
 
+        Assert.assertTrue(sourceSynchronizer.add(defaultSource));
+        defaultSource.setName("New name Source");
+
+        Assert.assertTrue(sourceSynchronizer.update(defaultSource));
+        ISource source = sourceSynchronizer.get(defaultSource.getId());
+
+        Assert.assertEquals(defaultSource.getName(), source.getName());
+
+        sourceSynchronizer.delete(defaultSource);
     }
 
     @Test
-    public void delete() {
+    public void delete() throws CurrencyException {
+        DefaultSource defaultSource = new DefaultSource();
+        defaultSource.setName("Test Source");
+        defaultSource.setOperationType(operationType);
 
+        Assert.assertTrue(sourceSynchronizer.add(defaultSource));
+
+        sourceSynchronizer.delete(defaultSource);
+
+
+        ISource source = sourceSynchronizer.get(defaultSource.getId());
+
+
+        Assert.assertNull(source);
     }
 
-    @Test
-    public void getListSource() {
-
-    }
 
     @Test
     public void getiSourceDAO() {
-
+        ISourceDAO iSourceDAO = sourceSynchronizer.getiSourceDAO();
+        Assert.assertNotNull(iSourceDAO);
+        Assert.assertTrue(iSourceDAO instanceof ISourceDAO);
     }
 }
