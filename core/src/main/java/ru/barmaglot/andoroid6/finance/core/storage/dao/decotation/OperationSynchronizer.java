@@ -223,4 +223,16 @@ public class OperationSynchronizer implements IOperationDAO {
         operationMap.get(object.getOperationType()).add(object);
         identityMap.put(object.getId(), object);
     }
+
+    public IOperationDAO getiOperationDAO() {
+        return iOperationDAO;
+    }
+
+    public SourceSynchronizer getSourceSynchronizer() {
+        return sourceSynchronizer;
+    }
+
+    public StorageSynchronizer getStorageSynchronizer() {
+        return storageSynchronizer;
+    }
 }
