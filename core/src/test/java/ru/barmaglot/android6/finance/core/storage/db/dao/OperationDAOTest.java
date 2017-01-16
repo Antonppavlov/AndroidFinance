@@ -23,6 +23,7 @@ public class OperationDAOTest {
             new SourceSynchronizer(new SourceDAO()).getIdentityMap(),
             new StorageSynchronizer(new StorageDAO()).getIdentityMap());
 
+
     private final long id = 1;
     private final IncomeOperation incomeOperation = new IncomeOperation(
             Calendar.getInstance(),
@@ -74,9 +75,9 @@ public class OperationDAOTest {
         Assert.assertNotNull(operationDAO.get(incomeOperation.getId()));
         String name = "Test Description";
         incomeOperation.setDescription(name);
-        Assert.assertTrue( operationDAO.update(incomeOperation));
+        Assert.assertTrue(operationDAO.update(incomeOperation));
 
-       Assert.assertEquals(operationDAO.get(incomeOperation.getId()).getDescription(), name);
+        Assert.assertEquals(operationDAO.get(incomeOperation.getId()).getDescription(), name);
     }
 
     @Test

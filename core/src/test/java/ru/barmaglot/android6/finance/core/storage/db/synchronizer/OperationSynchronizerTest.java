@@ -86,9 +86,15 @@ public class OperationSynchronizerTest {
     public void add() throws CurrencyException {
         boolean add = operationSynchronizer.add(incomeOperation);
         Assert.assertTrue(add);
-        Assert.assertTrue(operationSynchronizer.getAll().contains(incomeOperation));
+        Assert.assertTrue(operationSynchronizer.getOperationList().contains(incomeOperation));
 
-        // TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций
+        Assert.assertTrue(operationSynchronizer.getOperationMap().get(incomeOperation.getOperationType()).contains(incomeOperation));
+
+        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(incomeOperation.getId()),
+                            incomeOperation);
+
+
+        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций
 
     }
 

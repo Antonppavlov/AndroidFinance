@@ -176,14 +176,11 @@ public class OperationSynchronizer implements IOperationDAO {
                         break;
                     }
 
-
                 }
 
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
 
             if (!updateAmountResult) {
                 delete(operation);// откатываем созданную операцию
@@ -234,5 +231,17 @@ public class OperationSynchronizer implements IOperationDAO {
 
     public StorageSynchronizer getStorageSynchronizer() {
         return storageSynchronizer;
+    }
+
+    public List<IOperation> getOperationList() {
+        return operationList;
+    }
+
+    public Map<OperationType, List<IOperation>> getOperationMap() {
+        return operationMap;
+    }
+
+    public Map<Long, IOperation> getIdentityMap() {
+        return identityMap;
     }
 }

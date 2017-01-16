@@ -92,10 +92,8 @@ public class StorageSynchronizer implements IStorageDAO {
     public boolean addCurrency(IStorage storage, Currency currency, BigDecimal amount) throws CurrencyException, SQLException {
         if (iStorageDAO.addCurrency(storage, currency, amount)) {
             storage.addCurrency(currency);
-
             return true;
         }
-
         return false;
     }
 
@@ -120,13 +118,9 @@ public class StorageSynchronizer implements IStorageDAO {
     }
 
     @Override
-    public boolean updateAmount(IStorage storage, Currency currency, BigDecimal amount) {
+    public boolean updateAmount(IStorage storage, Currency currency, BigDecimal amount) throws AmountException, CurrencyException {
         if (iStorageDAO.updateAmount(storage, currency, amount)) {
-            try {
-                storage.updateAmount(amount, currency);
-            } catch (AmountException | CurrencyException e) {
-                e.printStackTrace();
-            }
+            storage.updateAmount(amount, currency);
             return true;
         }
 

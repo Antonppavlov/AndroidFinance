@@ -1,12 +1,15 @@
 package ru.barmaglot.android6.finance.core.storage.db.dao;
 
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.List;
 
@@ -16,14 +19,19 @@ import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.storage.DefaultS
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.type.CurrencyType;
 
+@RunWith(Parameterized.class)
 public class StorageDAOTest {
 
     private final StorageDAO storageDAO = new StorageDAO();
-    private final CurrencyType currencyType = CurrencyType.USD;
 
-    @After
-    public void tearDown() throws Exception {
+    @Parameterized.Parameter
+    public CurrencyType currencyType;
 
+    @Parameterized.Parameters
+    public static Collection<CurrencyType> getParameters() {
+        return Arrays.asList(
+                CurrencyType.values()
+        );
     }
 
     @Test

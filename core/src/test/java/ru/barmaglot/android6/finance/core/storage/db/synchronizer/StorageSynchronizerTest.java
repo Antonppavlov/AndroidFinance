@@ -9,8 +9,8 @@ import java.util.Currency;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.StorageSynchronizer;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
-import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.ISourceDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.storage.DefaultStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
@@ -46,8 +46,16 @@ public class StorageSynchronizerTest {
     }
 
     @Test
-    public void update() {
+    public void update() throws CurrencyException {
+        DefaultStorage defaultStorage = new DefaultStorage();
+        defaultStorage.setName("Test Storage StorageSynchronizerTest");
+        Assert.assertTrue(storageSynchronizer.add(defaultStorage));
+        defaultStorage.setName("New Stotage StorageSynchronizerTest");
 
+        Assert.assertTrue(storageSynchronizer.update(defaultStorage));
+
+        Assert.assertEquals(storageSynchronizer.get(defaultStorage.getId()).getName(),
+                            defaultStorage.getName());
     }
 
     @Test
@@ -77,8 +85,8 @@ public class StorageSynchronizerTest {
         IStorage iStorage = storageSynchronizer.getAll().get(1);
         Currency kzt = Currency.getInstance("KZT");
 
-
-        storageSynchronizer.addCurrency(iStorage, kzt, BigDecimal.ONE);
+        Assert.assertTrue(storageSynchronizer.deleteCurrency(iStorage, kzt));
+        Assert.assertTrue(storageSynchronizer.addCurrency(iStorage, kzt, BigDecimal.ONE));
 
         storageSynchronizer.deleteCurrency(iStorage, kzt);
     }
@@ -88,27 +96,25 @@ public class StorageSynchronizerTest {
         IStorage iStorage = storageSynchronizer.getAll().get(1);
         Currency kzt = Currency.getInstance("KZT");
 
+       // Assert.assertTrue(storageSynchronizer.deleteCurrency(iStorage, kzt));
+
+
         Assert.assertTrue(storageSynchronizer.addCurrency(iStorage, kzt, BigDecimal.ONE));
         Assert.assertTrue(storageSynchronizer.deleteCurrency(iStorage, kzt));
 
     }
 
     @Test
-    public void updateAmount() throws CurrencyException, SQLException {
+    public void updateAmount() throws CurrencyException, SQLException, AmountException {
         IStorage iStorage = storageSynchronizer.getAll().get(1);
         Currency kzt = Currency.getInstance("KZT");
         BigDecimal sumAmount = BigDecimal.valueOf(123);
         Assert.assertTrue(storageSynchronizer.addCurrency(iStorage, kzt, BigDecimal.ONE));
-        Assert.assertTrue(storageSynchronizer.updateAmount(iStorage,kzt, sumAmount));
+        Assert.assertTrue(storageSynchronizer.updateAmount(iStorage, kzt, sumAmount));
 
         int equalAmount = storageSynchronizer.getAllCurrency(iStorage).get(kzt).compareTo(sumAmount);
 
+        Assert.assertTrue(equalAmount == 0);
 
-        if(equalAmount==0){
-            Assert.assertTrue(true);
-        }
-        else {
-            Assert.assertTrue(false);
-        }
     }
 }
