@@ -1,6 +1,7 @@
 package ru.barmaglot.android6.finance.core.storage.db.dao;
 
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,6 +21,10 @@ public class StorageDAOTest {
     private final StorageDAO storageDAO = new StorageDAO();
     private final CurrencyType currencyType = CurrencyType.USD;
 
+    @After
+    public void tearDown() throws Exception {
+
+    }
 
     @Test
     public void addCurrency() throws CurrencyException, SQLException {

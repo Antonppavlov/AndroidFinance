@@ -3,8 +3,16 @@ package ru.barmaglot.android6.finance.core.storage.db.synchronizer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.Currency;
+
 import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.StorageSynchronizer;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.ISourceDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IStorageDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.storage.DefaultStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 
 public class StorageSynchronizerTest {
@@ -12,55 +20,95 @@ public class StorageSynchronizerTest {
     private final StorageSynchronizer storageSynchronizer = new StorageSynchronizer(new StorageDAO());
 
     @Test
-    public void getAll(){
-        Assert.assertTrue(storageSynchronizer.getAll().size()>1);
+    public void getAll() {
+        Assert.assertTrue(storageSynchronizer.getAll().size() > 1);
     }
 
     @Test
-    public void get(){
+    public void get() {
         IStorage lastStorageInCollection = storageSynchronizer.getAll().get(storageSynchronizer.getAll().size() - 1);
-
         IStorage iStorage = storageSynchronizer.get(lastStorageInCollection.getId());
+        Assert.assertEquals(lastStorageInCollection, iStorage);
+    }
 
-        Assert.assertEquals(
-                lastStorageInCollection,
-                iStorage
-                );
+    @Test
+    public void add() throws CurrencyException {
+        DefaultStorage defaultStorage = new DefaultStorage();
+        defaultStorage.setName("Test Storage StorageSynchronizerTest");
+
+
+        Assert.assertTrue(storageSynchronizer.add(defaultStorage));
+
+        IStorage iStorage = storageSynchronizer.get(defaultStorage.getId());
+
+        Assert.assertEquals(defaultStorage, iStorage);
 
     }
 
     @Test
-    public void add(){
+    public void update() {
 
     }
 
     @Test
-    public void update(){
+    public void delete() throws CurrencyException {
+        DefaultStorage defaultStorage = new DefaultStorage();
+        defaultStorage.setName("Test Storage StorageSynchronizerTest");
+
+
+        Assert.assertTrue(storageSynchronizer.add(defaultStorage));
+
+        Assert.assertTrue(storageSynchronizer.delete(defaultStorage));
+
+        IStorage iStorage = storageSynchronizer.get(defaultStorage.getId());
+
+        Assert.assertNull(iStorage);
+    }
+
+    @Test
+    public void getiStorageDAO() {
+        IStorageDAO storageDAO = storageSynchronizer.getiStorageDAO();
+        Assert.assertNotNull(storageDAO);
+        Assert.assertTrue(storageDAO instanceof StorageDAO);
+    }
+
+    @Test
+    public void addCurrency() throws CurrencyException, SQLException {
+        IStorage iStorage = storageSynchronizer.getAll().get(1);
+        Currency kzt = Currency.getInstance("KZT");
+
+
+        storageSynchronizer.addCurrency(iStorage, kzt, BigDecimal.ONE);
+
+        storageSynchronizer.deleteCurrency(iStorage, kzt);
+    }
+
+    @Test
+    public void deleteCurrency() throws CurrencyException, SQLException {
+        IStorage iStorage = storageSynchronizer.getAll().get(1);
+        Currency kzt = Currency.getInstance("KZT");
+
+        Assert.assertTrue(storageSynchronizer.addCurrency(iStorage, kzt, BigDecimal.ONE));
+        Assert.assertTrue(storageSynchronizer.deleteCurrency(iStorage, kzt));
 
     }
 
     @Test
-    public void delete(){
+    public void updateAmount() throws CurrencyException, SQLException {
+        IStorage iStorage = storageSynchronizer.getAll().get(1);
+        Currency kzt = Currency.getInstance("KZT");
+        BigDecimal sumAmount = BigDecimal.valueOf(123);
+        Assert.assertTrue(storageSynchronizer.addCurrency(iStorage, kzt, BigDecimal.ONE));
+        Assert.assertTrue(storageSynchronizer.updateAmount(iStorage,kzt, sumAmount));
 
-    }
+        int equalAmount = storageSynchronizer.getAllCurrency(iStorage).get(kzt).compareTo(sumAmount);
 
-    @Test
-    public void getiStorageDAO(){
 
-    }
-
-    @Test
-    public void addCurrency(){
-
-    }
-
-    @Test
-    public void deleteCurrency(){
-
-    }
-
-    @Test
-    public void updateAmount(){
-
+        if(equalAmount==0){
+            Assert.assertTrue(true);
+        }
+        else {
+            Assert.assertTrue(false);
+        }
     }
 }
