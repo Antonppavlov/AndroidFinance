@@ -20,6 +20,7 @@ import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.SourceDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.IncomeOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.OutcomeOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.operation.IOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 
@@ -37,16 +38,7 @@ public class OperationSynchronizerTest {
                     storageSynchronizer.getIdentityMap()
             ));
 
-    private final long id = 1;
-    private final IncomeOperation incomeOperation = new IncomeOperation(
-            Calendar.getInstance(),
-            "купил продуктов",
-            OperationType.INCOME,
-            sourceSynchronizer.get(id),
-            storageSynchronizer.get(id),
-            BigDecimal.valueOf(10),
-            storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0)
-    );
+
 
 
     @Parameterized.Parameter
@@ -84,8 +76,19 @@ public class OperationSynchronizerTest {
 
     @Test
     public void addOperationIncome() throws CurrencyException {
-        incomeOperation.setOperationType(OperationType.INCOME);
-        incomeOperation.getToStorage().getAvailableCurrencies().get(0);
+        long id = 1;
+        IncomeOperation incomeOperation = new IncomeOperation(
+                Calendar.getInstance(),
+                "купил продуктов",
+                OperationType.INCOME,
+                sourceSynchronizer.get(id),
+                storageSynchronizer.get(id),
+                BigDecimal.valueOf(10),
+                storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0)
+        );
+
+
+
         Assert.assertTrue(operationSynchronizer.add(incomeOperation));
 
         //проверка добавления в коллекции
@@ -100,8 +103,10 @@ public class OperationSynchronizerTest {
 
     @Test
     public void addOperationOutcome() throws CurrencyException {
-        incomeOperation.setOperationType(OperationType.OUTCOME);
-        incomeOperation.getToStorage().getAvailableCurrencies().get(0);
+        long id = 1;
+        OutcomeOperation outcomeOperation = new OutcomeOperation();
+
+
         Assert.assertTrue(operationSynchronizer.add(incomeOperation));
 
         //проверка добавления в коллекции
@@ -113,45 +118,60 @@ public class OperationSynchronizerTest {
         Assert.assertTrue(false);
 
     }
-
-    @Test
-    public void addOperationTransfer() throws CurrencyException {
-        incomeOperation.setOperationType(OperationType.TRANSFER);
-        incomeOperation.getToStorage().getAvailableCurrencies().get(0);
-        Assert.assertTrue(operationSynchronizer.add(incomeOperation));
-
-        //проверка добавления в коллекции
-        Assert.assertTrue(operationSynchronizer.getOperationList().contains(incomeOperation));
-        Assert.assertTrue(operationSynchronizer.getOperationMap().get(incomeOperation.getOperationType()).contains(incomeOperation));
-        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(incomeOperation.getId()),incomeOperation);
-
-        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для TRANSFER
-        Assert.assertTrue(false);
-
-    }
-
-    @Test
-    public void addOperationConvert() throws CurrencyException {
-        incomeOperation.setOperationType(OperationType.CONVERT);
-        incomeOperation.getToStorage().getAvailableCurrencies().get(0);
-        Assert.assertTrue(operationSynchronizer.add(incomeOperation));
-
-        //проверка добавления в коллекции
-        Assert.assertTrue(operationSynchronizer.getOperationList().contains(incomeOperation));
-        Assert.assertTrue(operationSynchronizer.getOperationMap().get(incomeOperation.getOperationType()).contains(incomeOperation));
-        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(incomeOperation.getId()),incomeOperation);
-
-        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для CONVERT
-Assert.assertTrue(false);
-    }
+//
+//    @Test
+//    public void addOperationTransfer() throws CurrencyException {
+//        incomeOperation.setOperationType(OperationType.TRANSFER);
+//        incomeOperation.getToStorage().getAvailableCurrencies().get(0);
+//        Assert.assertTrue(operationSynchronizer.add(incomeOperation));
+//
+//        //проверка добавления в коллекции
+//        Assert.assertTrue(operationSynchronizer.getOperationList().contains(incomeOperation));
+//        Assert.assertTrue(operationSynchronizer.getOperationMap().get(incomeOperation.getOperationType()).contains(incomeOperation));
+//        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(incomeOperation.getId()),incomeOperation);
+//
+//        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для TRANSFER
+//        Assert.assertTrue(false);
+//
+//    }
+//
+//    @Test
+//    public void addOperationConvert() throws CurrencyException {
+//        incomeOperation.setOperationType(OperationType.CONVERT);
+//        incomeOperation.getToStorage().getAvailableCurrencies().get(0);
+//        Assert.assertTrue(operationSynchronizer.add(incomeOperation));
+//
+//        //проверка добавления в коллекции
+//        Assert.assertTrue(operationSynchronizer.getOperationList().contains(incomeOperation));
+//        Assert.assertTrue(operationSynchronizer.getOperationMap().get(incomeOperation.getOperationType()).contains(incomeOperation));
+//        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(incomeOperation.getId()),incomeOperation);
+//
+//        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для CONVERT
+//        Assert.assertTrue(false);
+//    }
 
     @Test
     public void update() {
-        Assert.assertTrue(operationSynchronizer.update(incomeOperation));
+        //Откат предыдущих значений операции(удаление старой операции)
+        //Добавление новой информации(добавление обновленной операции)
+        //Не даем менять тип операции
+      //  Assert.assertTrue(operationSynchronizer.update(incomeOperation));
     }
 
     @Test
     public void delete() throws CurrencyException {
+        long id = 1;
+        IncomeOperation incomeOperation = new IncomeOperation(
+                Calendar.getInstance(),
+                "купил продуктов",
+                OperationType.INCOME,
+                sourceSynchronizer.get(id),
+                storageSynchronizer.get(id),
+                BigDecimal.valueOf(10),
+                storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0)
+        );
+
+
         boolean add = operationSynchronizer.add(incomeOperation);
         Assert.assertTrue(add);
 
