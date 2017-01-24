@@ -27,12 +27,12 @@ public class OperationDAOTest {
     private final long id = 1;
     private final IncomeOperation incomeOperation = new IncomeOperation(
             Calendar.getInstance(),
-            "купил продуктов",
             OperationType.INCOME,
+            "купил продуктов",
             operationDAO.getSourceIdentityMap().get(id),
-            operationDAO.getStorageIdentityMap().get(id),
+            operationDAO.getStorageIdentityMap().get(id).getAvailableCurrencies().get(0),
             BigDecimal.valueOf(10),
-            operationDAO.getStorageIdentityMap().get(id).getAvailableCurrencies().get(0)
+            operationDAO.getStorageIdentityMap().get(id)
     );
 
 

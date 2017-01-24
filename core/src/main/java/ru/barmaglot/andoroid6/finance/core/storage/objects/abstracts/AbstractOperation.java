@@ -24,10 +24,10 @@ public abstract class AbstractOperation implements IOperation {
         this.description = description;
         this.operationType = operationType;
     }
-    public AbstractOperation(Calendar dateTime, String description, OperationType operationType) {
+    public AbstractOperation(Calendar dateTime, OperationType operationType, String description) {
         this.dateTime = dateTime;
-        this.description = description;
         this.operationType = operationType;
+        this.description = description;
     }
 
     public AbstractOperation(long id, OperationType operationType) {

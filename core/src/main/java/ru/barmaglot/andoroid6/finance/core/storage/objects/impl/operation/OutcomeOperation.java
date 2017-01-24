@@ -25,7 +25,7 @@ public class OutcomeOperation extends AbstractOperation {
 
 
     public OutcomeOperation(Calendar dateTime, String description, OperationType operationType, IStorage fromStorage, ISource toSource, BigDecimal fromAmount, Currency fromCurrency) {
-        super(dateTime, description, operationType);
+        super(dateTime, operationType, description);
         this.fromStorage = fromStorage;
         this.toSource = toSource;
         this.fromAmount = fromAmount;

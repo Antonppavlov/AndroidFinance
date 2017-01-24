@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Currency;
 import java.util.List;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.OperationSynchronizer;
@@ -22,6 +23,7 @@ import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.IncomeOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.OutcomeOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.operation.IOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 
 @RunWith(Parameterized.class)
@@ -76,46 +78,74 @@ public class OperationSynchronizerTest {
 
     @Test
     public void addOperationIncome() throws CurrencyException {
+        //подготовка операции
         long id = 1;
+        BigDecimal money = BigDecimal.valueOf(10);
+        IStorage storage = storageSynchronizer.get(id);
+        Currency currencyInStorage = storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0);
         IncomeOperation incomeOperation = new IncomeOperation(
                 Calendar.getInstance(),
-                "купил продуктов",
                 OperationType.INCOME,
+                "купил продуктов",
                 sourceSynchronizer.get(id),
-                storageSynchronizer.get(id),
-                BigDecimal.valueOf(10),
-                storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0)
+                storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0),
+                money,
+                storage
         );
 
+        double amountInStorageBeforeIncome = storage.getAmount(currencyInStorage).doubleValue();
 
-
+        //провередние операции
         Assert.assertTrue(operationSynchronizer.add(incomeOperation));
 
         //проверка добавления в коллекции
         Assert.assertTrue(operationSynchronizer.getOperationList().contains(incomeOperation));
+
         Assert.assertTrue(operationSynchronizer.getOperationMap().get(incomeOperation.getOperationType()).contains(incomeOperation));
-        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(incomeOperation.getId()),incomeOperation);
 
-        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для INCOME
-        Assert.assertTrue(false);
+        Assert.assertEquals(
+                operationSynchronizer.getIdentityMap().get(incomeOperation.getId()),
+                incomeOperation);
 
+        //проверка обновления банса в хранилищах
+        double amountInStorageAfterIncome = storage.getAmount(currencyInStorage).doubleValue();
+
+        Assert.assertTrue(amountInStorageAfterIncome==amountInStorageBeforeIncome+money.doubleValue());
     }
 
     @Test
     public void addOperationOutcome() throws CurrencyException {
         long id = 1;
-        OutcomeOperation outcomeOperation = new OutcomeOperation();
+        BigDecimal money = BigDecimal.valueOf(10);
+        IStorage storage = storageSynchronizer.get(id);
+        Currency currencyInStorage = storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0);
+        OutcomeOperation outcomeOperation = new OutcomeOperation(
+                Calendar.getInstance(),
+                "Нашел 10 рубчиков",
+                OperationType.OUTCOME,
+                storage,
+                sourceSynchronizer.getListSource(OperationType.OUTCOME).get(0),
+                money,
+                currencyInStorage
+                );
 
+        double amountInStorageBeforeIncome = storage.getAmount(currencyInStorage).doubleValue();
 
-        Assert.assertTrue(operationSynchronizer.add(incomeOperation));
+        Assert.assertTrue(operationSynchronizer.add(outcomeOperation));
 
         //проверка добавления в коллекции
-        Assert.assertTrue(operationSynchronizer.getOperationList().contains(incomeOperation));
-        Assert.assertTrue(operationSynchronizer.getOperationMap().get(incomeOperation.getOperationType()).contains(incomeOperation));
-        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(incomeOperation.getId()),incomeOperation);
+        Assert.assertTrue(operationSynchronizer.getOperationList().contains(outcomeOperation));
+        Assert.assertTrue(operationSynchronizer.getOperationMap().get(outcomeOperation.getOperationType()).contains(outcomeOperation));
+
+        Assert.assertEquals(
+                operationSynchronizer.getIdentityMap().get(outcomeOperation.getId()),
+                outcomeOperation);
 
         //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для OUTCOME
-        Assert.assertTrue(false);
+        //проверка обновления банса в хранилищах
+        double amountInStorageAfterIncome = storage.getAmount(currencyInStorage).doubleValue();
+
+        Assert.assertTrue(amountInStorageAfterIncome==amountInStorageBeforeIncome-money.doubleValue());
 
     }
 //
@@ -161,16 +191,18 @@ public class OperationSynchronizerTest {
     @Test
     public void delete() throws CurrencyException {
         long id = 1;
+        BigDecimal money = BigDecimal.valueOf(10);
+        IStorage storage = storageSynchronizer.get(id);
+        Currency currencyInStorage = storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0);
         IncomeOperation incomeOperation = new IncomeOperation(
                 Calendar.getInstance(),
-                "купил продуктов",
                 OperationType.INCOME,
+                "купил продуктов",
                 sourceSynchronizer.get(id),
-                storageSynchronizer.get(id),
-                BigDecimal.valueOf(10),
-                storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0)
+                storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0),
+                money,
+                storage
         );
-
 
         boolean add = operationSynchronizer.add(incomeOperation);
         Assert.assertTrue(add);

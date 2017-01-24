@@ -17,8 +17,8 @@ public class IncomeOperation extends AbstractOperation {
         super(OperationType.INCOME);
     }
 
-    public IncomeOperation(Calendar dateTime, String description, OperationType operationType, ISource fromSource, IStorage toStorage, BigDecimal fromAmount, Currency fromCurrency) {
-        super(dateTime, description, operationType);
+    public IncomeOperation(Calendar dateTime, OperationType operationType, String description,  ISource fromSource,Currency fromCurrency, BigDecimal fromAmount, IStorage toStorage) {
+        super(dateTime, operationType, description);
         this.fromSource = fromSource;
         this.toStorage = toStorage;
         this.fromAmount = fromAmount;

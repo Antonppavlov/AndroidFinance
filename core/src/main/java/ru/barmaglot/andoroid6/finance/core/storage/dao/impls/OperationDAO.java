@@ -70,12 +70,9 @@ public class OperationDAO implements IOperationDAO {
             while (resultSet.next()) {
                 operationList.add(fillOperation(resultSet));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
         return operationList;
     }
 
@@ -90,11 +87,9 @@ public class OperationDAO implements IOperationDAO {
             while (resultSet.next()) {
                 iOperation = fillOperation(resultSet);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return iOperation;
     }
 
@@ -315,4 +310,6 @@ public class OperationDAO implements IOperationDAO {
     public Map<Long, IStorage> getStorageIdentityMap() {
         return storageIdentityMap;
     }
+
+
 }
