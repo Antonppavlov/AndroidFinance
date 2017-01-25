@@ -114,11 +114,12 @@ public class OperationDAO implements IOperationDAO {
                 }
                 case OUTCOME: {
                     OutcomeOperation outcomeOperation = (OutcomeOperation) object;
-                    preparedStatement.setLong(4, outcomeOperation.getId());
+                    preparedStatement.setLong(4, outcomeOperation.getFromStorage().getId());
                     preparedStatement.setString(5, outcomeOperation.getFromCurrency().getCurrencyCode());
                     preparedStatement.setBigDecimal(6, outcomeOperation.getFromAmount());
                     preparedStatement.setLong(7, outcomeOperation.getToSource().getId());
                     break;
+
                 }
                 case TRANSFER: {
                     TransferOperation transferOperation = (TransferOperation) object;
@@ -139,7 +140,7 @@ public class OperationDAO implements IOperationDAO {
                     break;
                 }
             }
-            if (preparedStatement.executeUpdate() == 1) { //если обновлена одна запить то выбрасываем тру
+            if (preparedStatement.executeUpdate() == 1) { //если добавлена одна запить то выбрасываем тру
                 try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                     while (resultSet.next()) {
                         object.setId(resultSet.getLong(1));

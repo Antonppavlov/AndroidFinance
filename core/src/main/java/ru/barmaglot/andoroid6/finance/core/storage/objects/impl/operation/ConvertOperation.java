@@ -1,6 +1,7 @@
 package ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Currency;
 
 import ru.barmaglot.andoroid6.finance.core.storage.objects.abstracts.AbstractOperation;
@@ -21,6 +22,26 @@ public class ConvertOperation extends AbstractOperation {
     private Currency toCurrency; // в какой валюте получили деньги
     private BigDecimal fromAmount; // сумма отправки в первой валюте
     private BigDecimal toAmount; // сумма получения во второй валюте
+
+    public ConvertOperation(Calendar dateTime,
+                            OperationType operationType,
+                            String description,
+
+                            IStorage fromIStorage,
+                            Currency fromCurrency,
+                            BigDecimal fromAmount,
+                            IStorage toIStorage,
+                            Currency toCurrency,
+                            BigDecimal toAmount) {
+
+        super(dateTime, operationType, description);
+        this.fromIStorage = fromIStorage;
+        this.toIStorage = toIStorage;
+        this.fromCurrency = fromCurrency;
+        this.toCurrency = toCurrency;
+        this.fromAmount = fromAmount;
+        this.toAmount = toAmount;
+    }
 
     public IStorage getFromStorage() {
         return fromIStorage;

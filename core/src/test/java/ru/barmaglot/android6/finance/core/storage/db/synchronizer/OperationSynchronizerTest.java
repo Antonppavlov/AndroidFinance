@@ -121,15 +121,16 @@ public class OperationSynchronizerTest {
         Currency currencyInStorage = storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0);
         OutcomeOperation outcomeOperation = new OutcomeOperation(
                 Calendar.getInstance(),
-                "Нашел 10 рубчиков",
                 OperationType.OUTCOME,
+                "Нашел 10 рубчиков",
                 storage,
-                sourceSynchronizer.getListSource(OperationType.OUTCOME).get(0),
+                currencyInStorage,
                 money,
-                currencyInStorage
+                sourceSynchronizer.getListSource(OperationType.OUTCOME).get(0)
                 );
 
         double amountInStorageBeforeIncome = storage.getAmount(currencyInStorage).doubleValue();
+
 
         Assert.assertTrue(operationSynchronizer.add(outcomeOperation));
 
@@ -186,6 +187,8 @@ public class OperationSynchronizerTest {
         //Добавление новой информации(добавление обновленной операции)
         //Не даем менять тип операции
       //  Assert.assertTrue(operationSynchronizer.update(incomeOperation));
+
+        Assert.assertTrue(operationSynchronizer.update(new OutcomeOperation()));
     }
 
     @Test
