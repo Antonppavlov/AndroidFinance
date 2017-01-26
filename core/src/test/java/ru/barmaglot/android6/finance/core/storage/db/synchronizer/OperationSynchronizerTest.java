@@ -22,6 +22,7 @@ import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.IncomeOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.OutcomeOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.TransferOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.operation.IOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
@@ -149,22 +150,36 @@ public class OperationSynchronizerTest {
         Assert.assertTrue(amountInStorageAfterIncome==amountInStorageBeforeIncome-money.doubleValue());
 
     }
-//
-//    @Test
-//    public void addOperationTransfer() throws CurrencyException {
-//        incomeOperation.setOperationType(OperationType.TRANSFER);
-//        incomeOperation.getToStorage().getAvailableCurrencies().get(0);
-//        Assert.assertTrue(operationSynchronizer.add(incomeOperation));
-//
-//        //проверка добавления в коллекции
-//        Assert.assertTrue(operationSynchronizer.getOperationList().contains(incomeOperation));
-//        Assert.assertTrue(operationSynchronizer.getOperationMap().get(incomeOperation.getOperationType()).contains(incomeOperation));
-//        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(incomeOperation.getId()),incomeOperation);
-//
-//        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для TRANSFER
-//        Assert.assertTrue(false);
-//
-//    }
+
+    @Test
+    public void addOperationTransfer() throws CurrencyException {
+        BigDecimal money = BigDecimal.valueOf(10);
+        IStorage storageOne = storageSynchronizer.get(1);
+        IStorage storageTwo = storageSynchronizer.get(2);
+        Currency currencyRUB = Currency.getInstance("RUB");
+        TransferOperation transferOperation = new TransferOperation(
+                Calendar.getInstance(),
+                OperationType.TRANSFER,
+                "Перевел 10 рублей на другой счет",
+                storageOne,
+                currencyRUB,
+                money,
+                storageTwo
+                );
+        Assert.assertTrue(operationSynchronizer.add(transferOperation));
+
+        System.out.println(storageOne);
+        System.out.println(storageTwo);
+        //проверка добавления в коллекции
+
+        Assert.assertTrue(operationSynchronizer.getOperationList().contains(transferOperation));
+        Assert.assertTrue(operationSynchronizer.getOperationMap().get(transferOperation.getOperationType()).contains(transferOperation));
+        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(transferOperation.getId()),transferOperation);
+
+        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для TRANSFER
+        Assert.assertTrue(false);
+
+    }
 //
 //    @Test
 //    public void addOperationConvert() throws CurrencyException {
