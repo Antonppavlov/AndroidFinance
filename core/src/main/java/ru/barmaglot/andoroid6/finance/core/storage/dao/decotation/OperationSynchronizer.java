@@ -195,7 +195,11 @@ public class OperationSynchronizer implements IOperationDAO {
 
     @Override
     public boolean update(IOperation object) {
-        return false;
+        boolean update = iOperationDAO.update(object);
+
+
+        return update;
+
     }
 
     @Override
