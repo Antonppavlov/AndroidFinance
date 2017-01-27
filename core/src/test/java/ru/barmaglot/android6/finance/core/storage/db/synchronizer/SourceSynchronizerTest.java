@@ -99,7 +99,6 @@ public class SourceSynchronizerTest {
         for (int i = 0; i < treeList.size(); i++) {
             if (treeList.get(i).getId() == parentId) {
                 treeListIdSource = i;
-                System.out.println(i);
             }
         }
 

@@ -158,6 +158,10 @@ public class OperationSynchronizerTest {
         IStorage storageOne = storageSynchronizer.get(1);
         IStorage storageTwo = storageSynchronizer.get(2);
         Currency currencyRUB = Currency.getInstance("RUB");
+
+        BigDecimal amountOneStorageRubBefore = storageOne.getAmount(currencyRUB);
+        BigDecimal amountTwoStorageRubBefore = storageTwo.getAmount(currencyRUB);
+
         TransferOperation transferOperation = new TransferOperation(
                 Calendar.getInstance(),
                 OperationType.TRANSFER,
@@ -169,16 +173,15 @@ public class OperationSynchronizerTest {
                 );
         Assert.assertTrue(operationSynchronizer.add(transferOperation));
 
-        System.out.println(storageOne);
-        System.out.println(storageTwo);
-        //проверка добавления в коллекции
-
+        //обновление коллекций для TRANSFER
         Assert.assertTrue(operationSynchronizer.getOperationList().contains(transferOperation));
         Assert.assertTrue(operationSynchronizer.getOperationMap().get(transferOperation.getOperationType()).contains(transferOperation));
         Assert.assertEquals(operationSynchronizer.getIdentityMap().get(transferOperation.getId()),transferOperation);
 
-        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для TRANSFER
-        Assert.assertTrue(false);
+        //проверку обновление банса в хранилищах и
+        Assert.assertTrue(amountOneStorageRubBefore.doubleValue()-money.doubleValue()==storageOne.getAmount(currencyRUB).doubleValue());
+        Assert.assertTrue(amountTwoStorageRubBefore.doubleValue()+money.doubleValue()==storageTwo.getAmount(currencyRUB).doubleValue());
+
 
     }
 
@@ -187,13 +190,18 @@ public class OperationSynchronizerTest {
         IStorage storageOne = storageSynchronizer.get(1);
         IStorage storageTwo = storageSynchronizer.get(2);
         Currency currencyRUB = Currency.getInstance("RUB");
-        Currency currencyENG = Currency.getInstance("ENG");
+        Currency currencyENG = Currency.getInstance("USD");
         BigDecimal moneyRUB = BigDecimal.valueOf(10);
         BigDecimal moneyENG = BigDecimal.valueOf(1);
 
+
+        double doubleOneRUBBeforeAdd = storageOne.getAmount(currencyRUB).doubleValue();
+        double doubleTwoENGBeforeAdd = storageTwo.getAmount(currencyENG).doubleValue();
+
+
         ConvertOperation convertOperation = new ConvertOperation(
                 Calendar.getInstance(),
-                OperationType.TRANSFER,
+                OperationType.CONVERT,
                 "Конвертация 10 рублей на другое хранилище в доллараы",
                 storageOne,
                 currencyRUB,
@@ -211,8 +219,11 @@ public class OperationSynchronizerTest {
         Assert.assertTrue(operationSynchronizer.getOperationMap().get(convertOperation.getOperationType()).contains(convertOperation));
         Assert.assertEquals(operationSynchronizer.getIdentityMap().get(convertOperation.getId()),convertOperation);
 
-        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для TRANSFER
-        Assert.assertTrue(false);
+        // проверку обновление банса в хранилищах и обновление коллекций для TRANSFER
+        Assert.assertTrue(doubleOneRUBBeforeAdd-moneyRUB.doubleValue()==storageOne.getAmount(currencyRUB).doubleValue());
+
+        Assert.assertTrue(doubleTwoENGBeforeAdd+moneyENG.doubleValue()==storageTwo.getAmount(currencyENG).doubleValue());
+       // storageOne.getAmount()
     }
 
     @Test

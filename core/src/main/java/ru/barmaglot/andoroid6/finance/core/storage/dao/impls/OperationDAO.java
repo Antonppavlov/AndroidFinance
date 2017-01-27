@@ -200,6 +200,8 @@ public class OperationDAO implements IOperationDAO {
                 break;
             }
         }
+        System.out.println(stringBuilder);
+        System.out.println();
         return String.valueOf(stringBuilder);
     }
 

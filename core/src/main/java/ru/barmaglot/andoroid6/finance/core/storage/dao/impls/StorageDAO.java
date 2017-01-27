@@ -101,9 +101,6 @@ public class StorageDAO implements IStorageDAO {
             preparedStatement.setLong(2, storage.getId());
             preparedStatement.setString(3, currency.getCurrencyCode());
             preparedStatement.setBigDecimal(1, amount);
-            System.out.println(storage.getId());
-            System.out.println(currency.getCurrencyCode());
-            System.out.println(amount);
             if (preparedStatement.executeUpdate() == 1) {
                 return true;
             }

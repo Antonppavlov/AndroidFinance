@@ -29,8 +29,8 @@ public class SQLiteConnection {
             Class.forName("org.sqlite.JDBC").newInstance();// можно эту строчку удалить - драйвер автоматически будет найден
 
             // создание подключение к базе данных по пути, указанному в урле
-            //    String url = "jdbc:sqlite:/Users/antonpavlov/AndroidStudioProjects/AndroidFinance/core/src/main/resource/money.db";
-             String url = "jdbc:sqlite:\\Users\\ap_pavlov\\StudioProjects\\AndroidFinance\\core\\src\\main\\resource\\money.db";
+            //  String url = "jdbc:sqlite:/Users/antonpavlov/AndroidStudioProjects/AndroidFinance/core/src/main/resource/money.db";
+          String url = "jdbc:sqlite:\\Users\\ap_pavlov\\StudioProjects\\AndroidFinance\\core\\src\\main\\resource\\money.db";
 
             if (connection ==null){
                 connection = DriverManager.getConnection(url);
