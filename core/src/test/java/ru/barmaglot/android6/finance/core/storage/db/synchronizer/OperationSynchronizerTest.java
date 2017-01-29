@@ -227,13 +227,36 @@ public class OperationSynchronizerTest {
     }
 
     @Test
-    public void update() {
+    public void update() throws CurrencyException {
         //Откат предыдущих значений операции(удаление старой операции)
         //Добавление новой информации(добавление обновленной операции)
         //Не даем менять тип операции
       //  Assert.assertTrue(operationSynchronizer.update(incomeOperation));
+        long id=1;
+        BigDecimal money = BigDecimal.valueOf(10);
+        IStorage storage = storageSynchronizer.get(id);
+        Currency currencyInStorage = storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0);
+        IncomeOperation incomeOperation = new IncomeOperation(
+                Calendar.getInstance(),
+                OperationType.INCOME,
+                "купил продуктов",
+                sourceSynchronizer.get(id),
+                storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0),
+                money,
+                storage
+        );
 
-        Assert.assertTrue(operationSynchronizer.update(new OutcomeOperation()));
+        Assert.assertTrue(operationSynchronizer.add(incomeOperation));
+        String newNameOperation = "New Name Operation";
+        incomeOperation.setDescription(newNameOperation);
+
+        Assert.assertTrue(operationSynchronizer.update(incomeOperation));
+
+
+        IOperation iOperation = operationSynchronizer.get(incomeOperation.getId());
+
+// TODO: 29.01.17 добработать чтобы проверял измение баланса для всех типов операции/ сейчас просто проверяет описание орпеции
+        Assert.assertEquals(iOperation.getDescription(),newNameOperation);
     }
 
     @Test

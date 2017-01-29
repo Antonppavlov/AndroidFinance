@@ -194,11 +194,11 @@ public class OperationSynchronizer implements IOperationDAO {
     }
 
     @Override
-    public boolean update(IOperation object) {
-        boolean update = iOperationDAO.update(object);
-
-
-        return update;
+    public boolean update(IOperation object) throws CurrencyException {
+        if (delete(iOperationDAO.get(object.getId())) && add(object)) {
+            return true;
+        }
+        return false;
 
     }
 

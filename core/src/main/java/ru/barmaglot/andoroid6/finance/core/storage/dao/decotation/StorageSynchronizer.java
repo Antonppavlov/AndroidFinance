@@ -62,7 +62,7 @@ public class StorageSynchronizer implements IStorageDAO {
     }
 
     @Override
-    public boolean update(IStorage object) {
+    public boolean update(IStorage object) throws CurrencyException {
         return iStorageDAO.update(object);
     }
 

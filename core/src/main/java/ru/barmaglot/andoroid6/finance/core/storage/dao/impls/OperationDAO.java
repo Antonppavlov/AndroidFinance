@@ -205,10 +205,11 @@ public class OperationDAO implements IOperationDAO {
         return String.valueOf(stringBuilder);
     }
 
+    //при обновлении не даем менять тип операции - только данные самой операции (дата, суммы, источники, хранилища, описание)
     @Override
-    public boolean update(IOperation object) {
-        return false;
-        // TODO: 12.01.2017 реализовать
+    public boolean update(IOperation operation) {
+        // при обновлении - удаляем старую операцию, добавляем новую, т.к. могут поменяться хранилища, источники
+        return (delete(operation) && add(operation));
     }
 
     @Override

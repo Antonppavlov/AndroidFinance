@@ -102,7 +102,7 @@ public class SourceSynchronizer implements ISourceDAO {
 
 
     @Override
-    public boolean update(ISource object) {
+    public boolean update(ISource object) throws CurrencyException {
         return iSourceDAO.update(object);
     }
 

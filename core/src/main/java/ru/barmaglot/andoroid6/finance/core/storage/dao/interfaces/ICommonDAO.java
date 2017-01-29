@@ -13,7 +13,7 @@ public interface ICommonDAO<T> {
 
     boolean add(T object) throws CurrencyException;
 
-    boolean update(T object);
+    boolean update(T object) throws CurrencyException;
 
     boolean delete(T object);
 
