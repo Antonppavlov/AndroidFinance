@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.ISourceDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.source.ISource;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
@@ -91,7 +92,7 @@ public class SourceSynchronizer implements ISourceDAO {
     }
 
     @Override
-    public boolean add(ISource object) throws CurrencyException {
+    public boolean add(ISource object) throws CurrencyException, AmountException {
         boolean add = iSourceDAO.add(object);
         if (add) {
             treeList.add(object);
@@ -102,12 +103,12 @@ public class SourceSynchronizer implements ISourceDAO {
 
 
     @Override
-    public boolean update(ISource object) throws CurrencyException {
+    public boolean update(ISource object) throws CurrencyException, AmountException {
         return iSourceDAO.update(object);
     }
 
     @Override
-    public boolean delete(ISource object) {
+    public boolean delete(ISource object) throws AmountException, CurrencyException {
         if (iSourceDAO.delete(object)) {
             removeToCollection(object);
             return true;

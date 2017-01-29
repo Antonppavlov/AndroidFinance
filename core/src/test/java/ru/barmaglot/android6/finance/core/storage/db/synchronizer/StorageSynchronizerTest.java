@@ -32,7 +32,7 @@ public class StorageSynchronizerTest {
     }
 
     @Test
-    public void add() throws CurrencyException {
+    public void add() throws CurrencyException, AmountException {
         DefaultStorage defaultStorage = new DefaultStorage();
         defaultStorage.setName("Test Storage StorageSynchronizerTest");
 
@@ -46,7 +46,7 @@ public class StorageSynchronizerTest {
     }
 
     @Test
-    public void update() throws CurrencyException {
+    public void update() throws CurrencyException, AmountException {
         DefaultStorage defaultStorage = new DefaultStorage();
         defaultStorage.setName("Test Storage StorageSynchronizerTest");
         Assert.assertTrue(storageSynchronizer.add(defaultStorage));
@@ -59,7 +59,7 @@ public class StorageSynchronizerTest {
     }
 
     @Test
-    public void delete() throws CurrencyException {
+    public void delete() throws CurrencyException, AmountException {
         DefaultStorage defaultStorage = new DefaultStorage();
         defaultStorage.setName("Test Storage StorageSynchronizerTest");
 

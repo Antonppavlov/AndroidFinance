@@ -52,7 +52,7 @@ public class StorageSynchronizer implements IStorageDAO {
     }
 
     @Override
-    public boolean add(IStorage object) throws CurrencyException {
+    public boolean add(IStorage object) throws CurrencyException, AmountException {
         boolean add = iStorageDAO.add(object);
         if (add) {
             addToCollection(object);
@@ -62,12 +62,12 @@ public class StorageSynchronizer implements IStorageDAO {
     }
 
     @Override
-    public boolean update(IStorage object) throws CurrencyException {
+    public boolean update(IStorage object) throws CurrencyException, AmountException {
         return iStorageDAO.update(object);
     }
 
     @Override
-    public boolean delete(IStorage object) {
+    public boolean delete(IStorage object) throws AmountException, CurrencyException {
         if (iStorageDAO.delete(object)) {
             removeToCollection(object);
             return true;

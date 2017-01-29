@@ -13,6 +13,7 @@ import java.util.Map;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.SourceSynchronizer;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.SourceDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.ISourceDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.source.DefaultSource;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.source.ISource;
@@ -67,7 +68,7 @@ public class SourceSynchronizerTest {
     }
 
     @Test
-    public void addSourceNotParent() throws CurrencyException {
+    public void addSourceNotParent() throws CurrencyException, AmountException {
         DefaultSource defaultSource = new DefaultSource();
         defaultSource.setName("Test Source");
         defaultSource.setOperationType(operationType);
@@ -83,7 +84,7 @@ public class SourceSynchronizerTest {
     }
 
     @Test
-    public void addSourceHaveParent() throws CurrencyException {
+    public void addSourceHaveParent() throws CurrencyException, AmountException {
         long parentId = 1;
 
         DefaultSource defaultSource = new DefaultSource();
@@ -111,7 +112,7 @@ public class SourceSynchronizerTest {
     }
 
     @Test
-    public void update() throws CurrencyException {
+    public void update() throws CurrencyException, AmountException {
         DefaultSource defaultSource = new DefaultSource();
         defaultSource.setName("Test Source");
         defaultSource.setOperationType(operationType);
@@ -128,7 +129,7 @@ public class SourceSynchronizerTest {
     }
 
     @Test
-    public void delete() throws CurrencyException {
+    public void delete() throws CurrencyException, AmountException {
         DefaultSource defaultSource = new DefaultSource();
         defaultSource.setName("Test Source");
         defaultSource.setOperationType(operationType);

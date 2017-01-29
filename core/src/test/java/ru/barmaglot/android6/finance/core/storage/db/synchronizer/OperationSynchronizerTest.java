@@ -19,6 +19,7 @@ import ru.barmaglot.andoroid6.finance.core.storage.dao.decotation.StorageSynchro
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.OperationDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.SourceDAO;
 import ru.barmaglot.andoroid6.finance.core.storage.dao.impls.StorageDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.ConvertOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.IncomeOperation;
@@ -41,8 +42,6 @@ public class OperationSynchronizerTest {
                     sourceSynchronizer.getIdentityMap(),
                     storageSynchronizer.getIdentityMap()
             ));
-
-
 
 
     @Parameterized.Parameter
@@ -79,7 +78,7 @@ public class OperationSynchronizerTest {
     }
 
     @Test
-    public void addOperationIncome() throws CurrencyException {
+    public void addOperationIncome() throws CurrencyException, AmountException {
         //подготовка операции
         long id = 1;
         BigDecimal money = BigDecimal.valueOf(10);
@@ -112,11 +111,11 @@ public class OperationSynchronizerTest {
         //проверка обновления банса в хранилищах
         double amountInStorageAfterIncome = storage.getAmount(currencyInStorage).doubleValue();
 
-        Assert.assertTrue(amountInStorageAfterIncome==amountInStorageBeforeIncome+money.doubleValue());
+        Assert.assertTrue(amountInStorageAfterIncome == amountInStorageBeforeIncome + money.doubleValue());
     }
 
     @Test
-    public void addOperationOutcome() throws CurrencyException {
+    public void addOperationOutcome() throws CurrencyException, AmountException {
         long id = 1;
         BigDecimal money = BigDecimal.valueOf(10);
         IStorage storage = storageSynchronizer.get(id);
@@ -129,7 +128,7 @@ public class OperationSynchronizerTest {
                 currencyInStorage,
                 money,
                 sourceSynchronizer.getListSource(OperationType.OUTCOME).get(0)
-                );
+        );
 
         double amountInStorageBeforeIncome = storage.getAmount(currencyInStorage).doubleValue();
 
@@ -144,16 +143,16 @@ public class OperationSynchronizerTest {
                 operationSynchronizer.getIdentityMap().get(outcomeOperation.getId()),
                 outcomeOperation);
 
-        //TODO: 13.01.17 нужно написать проверку обновление банса в хранилищах и обновление коллекций для OUTCOME
+        //проверка обновление банса в хранилищах и обновление коллекций для OUTCOME
         //проверка обновления банса в хранилищах
         double amountInStorageAfterIncome = storage.getAmount(currencyInStorage).doubleValue();
 
-        Assert.assertTrue(amountInStorageAfterIncome==amountInStorageBeforeIncome-money.doubleValue());
+        Assert.assertTrue(amountInStorageAfterIncome == amountInStorageBeforeIncome - money.doubleValue());
 
     }
 
     @Test
-    public void addOperationTransfer() throws CurrencyException {
+    public void addOperationTransfer() throws CurrencyException, AmountException {
         BigDecimal money = BigDecimal.valueOf(10);
         IStorage storageOne = storageSynchronizer.get(1);
         IStorage storageTwo = storageSynchronizer.get(2);
@@ -170,23 +169,23 @@ public class OperationSynchronizerTest {
                 currencyRUB,
                 money,
                 storageTwo
-                );
+        );
         Assert.assertTrue(operationSynchronizer.add(transferOperation));
 
         //обновление коллекций для TRANSFER
         Assert.assertTrue(operationSynchronizer.getOperationList().contains(transferOperation));
         Assert.assertTrue(operationSynchronizer.getOperationMap().get(transferOperation.getOperationType()).contains(transferOperation));
-        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(transferOperation.getId()),transferOperation);
+        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(transferOperation.getId()), transferOperation);
 
         //проверку обновление банса в хранилищах и
-        Assert.assertTrue(amountOneStorageRubBefore.doubleValue()-money.doubleValue()==storageOne.getAmount(currencyRUB).doubleValue());
-        Assert.assertTrue(amountTwoStorageRubBefore.doubleValue()+money.doubleValue()==storageTwo.getAmount(currencyRUB).doubleValue());
+        Assert.assertTrue(amountOneStorageRubBefore.doubleValue() - money.doubleValue() == storageOne.getAmount(currencyRUB).doubleValue());
+        Assert.assertTrue(amountTwoStorageRubBefore.doubleValue() + money.doubleValue() == storageTwo.getAmount(currencyRUB).doubleValue());
 
 
     }
 
     @Test
-    public void addOperationConvert() throws CurrencyException {
+    public void addOperationConvert() throws CurrencyException, AmountException {
         IStorage storageOne = storageSynchronizer.get(1);
         IStorage storageTwo = storageSynchronizer.get(2);
         Currency currencyRUB = Currency.getInstance("RUB");
@@ -217,22 +216,22 @@ public class OperationSynchronizerTest {
         //проверка добавления в коллекции
         Assert.assertTrue(operationSynchronizer.getOperationList().contains(convertOperation));
         Assert.assertTrue(operationSynchronizer.getOperationMap().get(convertOperation.getOperationType()).contains(convertOperation));
-        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(convertOperation.getId()),convertOperation);
+        Assert.assertEquals(operationSynchronizer.getIdentityMap().get(convertOperation.getId()), convertOperation);
 
         // проверку обновление банса в хранилищах и обновление коллекций для TRANSFER
-        Assert.assertTrue(doubleOneRUBBeforeAdd-moneyRUB.doubleValue()==storageOne.getAmount(currencyRUB).doubleValue());
+        Assert.assertTrue(doubleOneRUBBeforeAdd - moneyRUB.doubleValue() == storageOne.getAmount(currencyRUB).doubleValue());
 
-        Assert.assertTrue(doubleTwoENGBeforeAdd+moneyENG.doubleValue()==storageTwo.getAmount(currencyENG).doubleValue());
-       // storageOne.getAmount()
+        Assert.assertTrue(doubleTwoENGBeforeAdd + moneyENG.doubleValue() == storageTwo.getAmount(currencyENG).doubleValue());
+        // storageOne.getAmount()
     }
 
     @Test
-    public void update() throws CurrencyException {
+    public void update() throws CurrencyException, AmountException {
         //Откат предыдущих значений операции(удаление старой операции)
         //Добавление новой информации(добавление обновленной операции)
         //Не даем менять тип операции
-      //  Assert.assertTrue(operationSynchronizer.update(incomeOperation));
-        long id=1;
+        //  Assert.assertTrue(operationSynchronizer.update(incomeOperation));
+        long id = 1;
         BigDecimal money = BigDecimal.valueOf(10);
         IStorage storage = storageSynchronizer.get(id);
         Currency currencyInStorage = storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0);
@@ -241,26 +240,39 @@ public class OperationSynchronizerTest {
                 OperationType.INCOME,
                 "купил продуктов",
                 sourceSynchronizer.get(id),
-                storageSynchronizer.getIdentityMap().get(id).getAvailableCurrencies().get(0),
+                currencyInStorage,
                 money,
                 storage
         );
 
         Assert.assertTrue(operationSynchronizer.add(incomeOperation));
+
+        double beforeAmount = storage.getAmount(currencyInStorage).doubleValue();
+
         String newNameOperation = "New Name Operation";
         incomeOperation.setDescription(newNameOperation);
+        BigDecimal newMoney = BigDecimal.valueOf(20);
+        incomeOperation.setFromAmount(newMoney);
 
         Assert.assertTrue(operationSynchronizer.update(incomeOperation));
+
+        double afterAmount = storage.getAmount(currencyInStorage).doubleValue();
 
 
         IOperation iOperation = operationSynchronizer.get(incomeOperation.getId());
 
-// TODO: 29.01.17 добработать чтобы проверял измение баланса для всех типов операции/ сейчас просто проверяет описание орпеции
-        Assert.assertEquals(iOperation.getDescription(),newNameOperation);
+        // TODO: 29.01.17 добработать чтобы проверял измение баланса для всех типов операции
+
+        Assert.assertEquals(iOperation.getDescription(), newNameOperation);
+        System.out.println(beforeAmount);
+
+        System.out.println(afterAmount);
+        Assert.assertTrue(beforeAmount-money.doubleValue()+newMoney.doubleValue()==afterAmount);
+
     }
 
     @Test
-    public void delete() throws CurrencyException {
+    public void delete() throws CurrencyException, AmountException {
         long id = 1;
         BigDecimal money = BigDecimal.valueOf(10);
         IStorage storage = storageSynchronizer.get(id);
@@ -278,11 +290,18 @@ public class OperationSynchronizerTest {
         boolean add = operationSynchronizer.add(incomeOperation);
         Assert.assertTrue(add);
 
+        BigDecimal amountBeforeDelete = storage.getAmount(currencyInStorage);
         boolean delete = operationSynchronizer.delete(incomeOperation);
         Assert.assertTrue(delete);
 
         IOperation iOperation = operationSynchronizer.get(incomeOperation.getId());
+        BigDecimal amountAfterDelete = storage.getAmount(currencyInStorage);
 
         Assert.assertNull(iOperation);
+        Assert.assertTrue(
+                amountBeforeDelete.doubleValue()==
+                amountAfterDelete.doubleValue()+money.doubleValue()
+        );
+        // TODO: 30.01.17 нужно написать проверки для других типов операции
     }
 }

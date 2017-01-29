@@ -3,18 +3,21 @@ package ru.barmaglot.andoroid6.finance.core.storage.dao.decotation;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ru.barmaglot.andoroid6.finance.core.storage.dao.interfaces.IOperationDAO;
+import ru.barmaglot.andoroid6.finance.core.storage.exception.AmountException;
 import ru.barmaglot.andoroid6.finance.core.storage.exception.CurrencyException;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.ConvertOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.IncomeOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.OutcomeOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.impl.operation.TransferOperation;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.operation.IOperation;
+import ru.barmaglot.andoroid6.finance.core.storage.objects.interfaces.storage.IStorage;
 import ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType;
 
 import static ru.barmaglot.andoroid6.finance.core.storage.objects.type.OperationType.CONVERT;
@@ -100,7 +103,7 @@ public class OperationSynchronizer implements IOperationDAO {
 
     @Override
     // При добавлении операции – нужно сначала добавить запись в БД, затем добавить новую операцию во все коллекции и обновить баланс соотв. хранилища
-    public boolean add(IOperation operation) throws CurrencyException {
+    public boolean add(IOperation operation) throws CurrencyException, AmountException {
         if (iOperationDAO.add(operation)) {// если в БД добавился нормально
             addToCollections(operation);// добавляем в коллекции
 
@@ -194,28 +197,79 @@ public class OperationSynchronizer implements IOperationDAO {
     }
 
     @Override
-    public boolean update(IOperation object) throws CurrencyException {
-        if (delete(iOperationDAO.get(object.getId())) && add(object)) {
-            return true;
-        }
-        return false;
-
+    public boolean update(IOperation object) throws CurrencyException, AmountException {
+        return delete(iOperationDAO.get(object.getId())) && add(object);
     }
 
     @Override
-    public boolean delete(IOperation object) {
-        boolean delete = iOperationDAO.delete(object);
+    public boolean delete(IOperation operation) throws AmountException, CurrencyException {
+        boolean delete = iOperationDAO.delete(operation) && revertBalance(operation);
         if (delete) {
-            removeFromCollections(object);
+            removeFromCollections(operation);
         }
         return delete;
+    }
+
+    private boolean revertBalance(IOperation operation) throws CurrencyException, AmountException {
+        boolean result = false;
+
+        switch (operation.getOperationType()) {
+            case INCOME: {
+                //если был доход тогда убавляем сумму с хранилища
+                IncomeOperation incomeOperation = (IncomeOperation) operation;
+
+                IStorage toStorage = incomeOperation.getToStorage();
+                Currency fromCurrency = incomeOperation.getFromCurrency();
+                BigDecimal subtractAmount = toStorage.getAmount(fromCurrency).subtract(incomeOperation.getFromAmount());
+
+                result = storageSynchronizer.updateAmount(
+                        toStorage,
+                        fromCurrency,
+                        subtractAmount
+                );
+
+                break;
+            }
+            case OUTCOME: {
+                //если расход то добавляем сумму в хранилище
+                OutcomeOperation outcomeOperation = (OutcomeOperation) operation;
+                IStorage fromStorage = outcomeOperation.getFromStorage();
+                Currency fromCurrency = outcomeOperation.getFromCurrency();
+
+                BigDecimal addAmount = fromStorage.getAmount(fromCurrency).add(outcomeOperation.getFromAmount());
+
+                result = storageSynchronizer.updateAmount(
+                        fromStorage,
+                        fromCurrency,
+                        addAmount
+                );
+
+                break;
+            }
+            case TRANSFER: {
+                //если трансфер то возвращаем с одного хранилища в другое
+                TransferOperation transferOperation = (TransferOperation) operation;
+
+
+
+                break;
+            }
+            case CONVERT: {
+                //то возвращаем с одного типа валюты в другой
+                ConvertOperation convertOperation = (ConvertOperation) operation;
+
+
+                break;
+            }
+        }
+
+        return result;
     }
 
     private void removeFromCollections(IOperation object) {
         operationList.remove(object);
         operationMap.get(object.getOperationType()).remove(object);
         identityMap.remove(object.getId());
-
     }
 
 
