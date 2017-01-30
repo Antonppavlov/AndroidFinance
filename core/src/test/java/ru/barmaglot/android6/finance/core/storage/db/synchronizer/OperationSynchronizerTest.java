@@ -298,9 +298,7 @@ public class OperationSynchronizerTest {
         BigDecimal amountAfterDelete = storage.getAmount(currencyInStorage);
 
         Assert.assertNull(iOperation);
-        Assert.assertTrue(
-                amountBeforeDelete.doubleValue()==
-                amountAfterDelete.doubleValue()+money.doubleValue()
+        Assert.assertTrue(amountBeforeDelete.equals(amountAfterDelete.add(money))
         );
         // TODO: 30.01.17 нужно написать проверки для других типов операции
     }
