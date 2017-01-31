@@ -186,26 +186,26 @@ public class OperationSynchronizerTest {
 
     @Test
     public void addOperationConvert() throws CurrencyException, AmountException {
-        IStorage storageOne = storageSynchronizer.get(1);
-        IStorage storageTwo = storageSynchronizer.get(2);
+        IStorage storageFrom = storageSynchronizer.get(1);
+        IStorage storageTo = storageSynchronizer.get(2);
         Currency currencyRUB = Currency.getInstance("RUB");
         Currency currencyENG = Currency.getInstance("USD");
         BigDecimal moneyRUB = BigDecimal.valueOf(10);
         BigDecimal moneyENG = BigDecimal.valueOf(1);
 
 
-        double doubleOneRUBBeforeAdd = storageOne.getAmount(currencyRUB).doubleValue();
-        double doubleTwoENGBeforeAdd = storageTwo.getAmount(currencyENG).doubleValue();
+        double doubleStorageFromRUBBeforeAdd = storageFrom.getAmount(currencyRUB).doubleValue();
+        double doubleStorageToENGBeforeAdd = storageTo.getAmount(currencyENG).doubleValue();
 
 
         ConvertOperation convertOperation = new ConvertOperation(
                 Calendar.getInstance(),
                 OperationType.CONVERT,
                 "Конвертация 10 рублей на другое хранилище в доллараы",
-                storageOne,
+                storageFrom,
                 currencyRUB,
                 moneyRUB,
-                storageTwo,
+                storageTo,
                 currencyENG,
                 moneyENG
         );
@@ -219,10 +219,10 @@ public class OperationSynchronizerTest {
         Assert.assertEquals(operationSynchronizer.getIdentityMap().get(convertOperation.getId()), convertOperation);
 
         // проверку обновление банса в хранилищах и обновление коллекций для TRANSFER
-        Assert.assertTrue(doubleOneRUBBeforeAdd - moneyRUB.doubleValue() == storageOne.getAmount(currencyRUB).doubleValue());
+        Assert.assertTrue(doubleStorageFromRUBBeforeAdd - moneyRUB.doubleValue() == storageFrom.getAmount(currencyRUB).doubleValue());
 
-        Assert.assertTrue(doubleTwoENGBeforeAdd + moneyENG.doubleValue() == storageTwo.getAmount(currencyENG).doubleValue());
-        // storageOne.getAmount()
+        Assert.assertTrue(doubleStorageToENGBeforeAdd + moneyENG.doubleValue() == storageTo.getAmount(currencyENG).doubleValue());
+        // storageFrom.getAmount()
     }
 
     @Test
