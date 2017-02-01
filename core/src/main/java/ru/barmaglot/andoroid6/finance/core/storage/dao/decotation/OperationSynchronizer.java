@@ -201,6 +201,7 @@ public class OperationSynchronizer implements IOperationDAO {
         return delete(iOperationDAO.get(object.getId())) && add(object);
     }
 
+
     @Override
     public boolean delete(IOperation operation) throws AmountException, CurrencyException {
         boolean delete = iOperationDAO.delete(operation) && revertBalance(operation);
@@ -249,15 +250,37 @@ public class OperationSynchronizer implements IOperationDAO {
             case TRANSFER: {
                 //если трансфер то возвращаем с одного хранилища в другое
                 TransferOperation transferOperation = (TransferOperation) operation;
+                IStorage toStorage = transferOperation.getToStorage();
+                IStorage fromStorage = transferOperation.getFromStorage();
+                Currency fromCurrency = transferOperation.getFromCurrency();
+                BigDecimal fromAmount = transferOperation.getFromAmount();
 
+                BigDecimal amountToStorage = toStorage.getAmount(fromCurrency).add(fromAmount);
+                BigDecimal amountFromStorage = fromStorage.getAmount(fromCurrency).subtract(fromAmount);
 
+                result = storageSynchronizer.updateAmount(fromStorage, fromCurrency, amountToStorage) &&
+                        storageSynchronizer.updateAmount(toStorage, fromCurrency, amountFromStorage);
 
                 break;
             }
             case CONVERT: {
                 //то возвращаем с одного типа валюты в другой
                 ConvertOperation convertOperation = (ConvertOperation) operation;
+                IStorage toStorage = convertOperation.getToStorage();
+                IStorage fromStorage = convertOperation.getFromStorage();
 
+                Currency toCurrency = convertOperation.getToCurrency();
+                Currency fromCurrency = convertOperation.getFromCurrency();
+
+                BigDecimal toAmount = convertOperation.getToAmount();
+                BigDecimal fromAmount = convertOperation.getFromAmount();
+
+                BigDecimal amountToStorage = toStorage.getAmount(toCurrency).add(toAmount);
+                BigDecimal amountFromStorage = fromStorage.getAmount(fromCurrency).add(fromAmount);
+
+
+                result = storageSynchronizer.updateAmount(toStorage, toCurrency, amountToStorage) &&
+                        storageSynchronizer.updateAmount(fromStorage, fromCurrency, amountFromStorage);
 
                 break;
             }
