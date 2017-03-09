@@ -7,45 +7,49 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by antonpavlov on 05.12.16.
- */
+
 public class SQLiteConnection {
-    private static SQLiteConnection ourInstance = new SQLiteConnection();
-    private Connection connection;
+
+    private static Connection connection;
+    private static String driverClassName;
+    private static String urlConnection;
 
 
-    public static SQLiteConnection getInstance() {
-        return ourInstance;
+    public static void init(String driverClass, String url) {
+        driverClassName = driverClass;
+        urlConnection = url;
+
+        createConnection();
     }
 
-    private SQLiteConnection() {
-    }
-
-
-    public Connection getConnection() {
+    private static void createConnection() {
         try {
-
-            Class.forName("org.sqlite.JDBC").newInstance();// можно эту строчку удалить - драйвер автоматически будет найден
-
-            // создание подключение к базе данных по пути, указанному в урле
-             String url = "jdbc:sqlite:/Users/antonpavlov/AndroidStudioProjects/AndroidFinance/core/src/main/resource/money.db";
-            // String url = "jdbc:sqlite:\\Users\\ap_pavlov\\StudioProjects\\AndroidFinance\\core\\src\\main\\resource\\money.db";
-
-            if (connection ==null){
-                connection = DriverManager.getConnection(url);
+            if (driverClassName == null) {
+                driverClassName = "org.sqldroid.SQLDroidDriver";
             }
-            
-            connection.createStatement().execute("PRAGMA foreign_keys = ON");
-            connection.createStatement().execute("PRAGMA encoding = \"UTF-8\"");
+            if (urlConnection == null) {
+                urlConnection="jdbc:sqldroid:/Users/antonpavlov/AndroidStudioProjects/AndroidFinance/app/src/main/assets/money.db";
+            }
+            Class.forName(driverClassName).newInstance();
 
-            return connection;
+            if (connection == null) {
+                connection = DriverManager.getConnection(urlConnection);
+                connection.createStatement().execute("PRAGMA foreign_keys = ON");
+                connection.createStatement().execute("PRAGMA encoding = \"UTF-8\"");
+            }
 
         } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(SQLiteConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return null;
     }
+
+
+    public static Connection getConnection() {
+        if (connection == null) {
+            createConnection();
+        }
+        return connection;
+    }
+
 
 }

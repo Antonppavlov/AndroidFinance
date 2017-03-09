@@ -31,7 +31,7 @@ public class StorageDAO implements IStorageDAO {
 
         Map<Currency, BigDecimal> currencyMap = new HashMap<>();
 
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "SELECT * FROM " + CURRENCY_AMOUNT_TABLE + " where storage_id=?")
              ;) {
@@ -54,7 +54,7 @@ public class StorageDAO implements IStorageDAO {
 
     @Override
     public boolean addCurrency(IStorage storage, Currency currency, BigDecimal amount) throws SQLException {
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "INSERT INTO " + CURRENCY_AMOUNT_TABLE + " (storage_id,currency_code,amount) values(?,?,?)")
              ;) {
@@ -75,7 +75,7 @@ public class StorageDAO implements IStorageDAO {
     public boolean deleteCurrency(IStorage storage, Currency currency) {
         // TODO: 07.12.16 Необходимо проверять есть ли у сумма на счету и если есть выбрасывать ошибку
         // TODO: 07.12.16 или предлагать пользователю подтверждения удаления с суммой
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "DELETE FROM  " + CURRENCY_AMOUNT_TABLE + " where storage_id=? and currency_code=?")
              ;) {
@@ -94,7 +94,7 @@ public class StorageDAO implements IStorageDAO {
 
     @Override
     public boolean updateAmount(IStorage storage, Currency currency, BigDecimal amount) {
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "UPDATE  " + CURRENCY_AMOUNT_TABLE + " set amount=? where storage_id=? and currency_code=?")
              ;) {
@@ -116,7 +116,7 @@ public class StorageDAO implements IStorageDAO {
     public List<IStorage> getAll() {
         storageList.clear();
 
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "SELECT * FROM " + STORAGE_TABLE + " order by parent_id")
              ;) {
@@ -142,7 +142,7 @@ public class StorageDAO implements IStorageDAO {
     @Override
     public IStorage get(long id) {
         DefaultStorage storage = null;
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "SELECT * FROM " + STORAGE_TABLE + " where id=?")
              ;) {
@@ -164,7 +164,7 @@ public class StorageDAO implements IStorageDAO {
 
     @Override
     public boolean add(IStorage object) throws CurrencyException {
-        Connection connection = SQLiteConnection.getInstance().getConnection();
+        Connection connection = SQLiteConnection.getConnection();
         try {
             //отключаем автокоммит чтобы сделать все одной тразакцией если все условия успешно выполнятся
             connection.setAutoCommit(false);
@@ -217,7 +217,7 @@ public class StorageDAO implements IStorageDAO {
 
     @Override
     public boolean update(IStorage object) {
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "UPDATE " + STORAGE_TABLE + " set name=? where id=?")
              ;) {
@@ -240,7 +240,7 @@ public class StorageDAO implements IStorageDAO {
     public boolean delete(IStorage object) {
           // TODO: 07.12.16 проверять если есть заведенные валюты и операции по данному хранилищу то запрещать удаление
 
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "DELETE FROM " + STORAGE_TABLE + " where id=?")
              ;) {

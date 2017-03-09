@@ -25,7 +25,7 @@ public class SourceDAO implements ISourceDAO {
     public List<ISource> getAll() {
         sourceList.clear();
 
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "SELECT * FROM " + SOURCE_TABLE + " order by parent_id");) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -50,7 +50,7 @@ public class SourceDAO implements ISourceDAO {
     public ISource get(long id) {
         DefaultSource source = null;
 
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement("SELECT * FROM " + SOURCE_TABLE + " where id=?");) {
 
             preparedStatement.setLong(1, id);
@@ -75,7 +75,7 @@ public class SourceDAO implements ISourceDAO {
     public List<ISource> getListSource(OperationType operationType) {
         List<ISource> sourceList = new ArrayList<>();
 
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement("SELECT * FROM " + SOURCE_TABLE + " where operation_type_id=?");) {
 
             preparedStatement.setLong(1, operationType.getId());
@@ -103,7 +103,7 @@ public class SourceDAO implements ISourceDAO {
     @Override
     public boolean add(ISource object) {
         try (PreparedStatement preparedStatement =
-                     SQLiteConnection.getInstance().getConnection().prepareStatement(
+                     SQLiteConnection.getConnection().prepareStatement(
                              "insert into " + SOURCE_TABLE + "(name, parent_id, operation_type_id) values(?,?,?)",
                              Statement.RETURN_GENERATED_KEYS);) {
 
@@ -133,7 +133,7 @@ public class SourceDAO implements ISourceDAO {
 
     @Override
     public boolean update(ISource object) {
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "UPDATE " + SOURCE_TABLE + " set name=? where id=?")
              ;) {
@@ -153,7 +153,7 @@ public class SourceDAO implements ISourceDAO {
 
     @Override
     public boolean delete(ISource object) {
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection()
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection()
                 .prepareStatement(
                         "DELETE FROM " + SOURCE_TABLE + " where id=?")
              ;) {

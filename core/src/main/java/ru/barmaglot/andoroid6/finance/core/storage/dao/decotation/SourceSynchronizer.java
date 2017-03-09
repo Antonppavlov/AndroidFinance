@@ -54,6 +54,7 @@ public class SourceSynchronizer implements ISourceDAO {
     }
 
     private void distributionOperation(List<ISource> sourceList) {
+
         List<ISource> incomeList = new ArrayList<>();
         List<ISource> outcomeList = new ArrayList<>();
         List<ISource> transferList = new ArrayList<>();

@@ -24,8 +24,7 @@ public class OutcomeOperation extends AbstractOperation {
 
 
 
-    public OutcomeOperation(
-                            Calendar dateTime,
+    public OutcomeOperation(Calendar dateTime,
                             OperationType operationType,
                             String description,
                             IStorage fromStorage,

@@ -43,7 +43,7 @@ public class OperationDAO implements IOperationDAO {
     public List<IOperation> getList(OperationType operationType) {
         List<IOperation> operationList = new ArrayList<>();
 
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection().prepareStatement(
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection().prepareStatement(
                 "SELECT * FROM " + OPERATION_TABLE + " where type_id=?")) {
             preparedStatement.setLong(1, operationType.getId());
 
@@ -64,7 +64,7 @@ public class OperationDAO implements IOperationDAO {
     @Override
     public List<IOperation> getAll() {
         List<IOperation> operationList = new ArrayList<>();
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection().prepareStatement(
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection().prepareStatement(
                 "SELECT * FROM " + OPERATION_TABLE)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -80,7 +80,7 @@ public class OperationDAO implements IOperationDAO {
     @Override
     public IOperation get(long id) {
         IOperation iOperation = null;
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection().prepareStatement(
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection().prepareStatement(
                 "SELECT * FROM " + OPERATION_TABLE + " where id=?");) {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -97,7 +97,7 @@ public class OperationDAO implements IOperationDAO {
     public boolean add(IOperation object) {
         String sql = createSQL(object.getOperationType());
 
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection().prepareStatement(
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection().prepareStatement(
                 sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, object.getDateTime().getTimeInMillis());
             preparedStatement.setLong(2, object.getOperationType().getId());
@@ -214,7 +214,7 @@ public class OperationDAO implements IOperationDAO {
 
     @Override
     public boolean delete(IOperation object) {
-        try (PreparedStatement preparedStatement = SQLiteConnection.getInstance().getConnection().prepareStatement(
+        try (PreparedStatement preparedStatement = SQLiteConnection.getConnection().prepareStatement(
                 "DELETE FROM " + OPERATION_TABLE + " where id=?"
         );) {
             preparedStatement.setLong(1, object.getId());
@@ -310,6 +310,7 @@ public class OperationDAO implements IOperationDAO {
     public Map<Long, ISource> getSourceIdentityMap() {
         return sourceIdentityMap;
     }
+
 
     public Map<Long, IStorage> getStorageIdentityMap() {
         return storageIdentityMap;
